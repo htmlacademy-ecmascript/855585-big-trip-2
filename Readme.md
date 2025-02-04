@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Елена Покровская](https://up.htmlacademy.ru/ecmascript-individual/2/user/855585).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Сударев](https://htmlacademy.ru/profile/id1152185).
 
 ---
 
