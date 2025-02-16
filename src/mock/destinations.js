@@ -1,3 +1,6 @@
+import {getRandomInteger} from '../util.js';
+
+const maxNumber = 100;
 //Данные для пунктов назначения
 export const destinations = [
   {
@@ -12,9 +15,17 @@ export const destinations = [
     name: 'Amsterdam',
     pictures: [
       {
-        src: 'http://picsum.photos/300/200?r=0.0762563005163317',
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(maxNumber)}`,
         description: 'Amsterdam building'
-      }
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(maxNumber)}`,
+        description: 'Amsterdam building'
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(maxNumber)}`,
+        description: 'Amsterdam building'
+      },
     ]
   },
   {
@@ -23,8 +34,20 @@ export const destinations = [
     name: 'Geneva',
     pictures: [
       {
-        src: 'http://picsum.photos/300/200?r=0.0762563005163318',
-        description: 'Geneva building'
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(maxNumber)}`,
+        description: 'Geneva photo 1'
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(maxNumber)}`,
+        description: 'Geneva photo 2'
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(maxNumber)}`,
+        description: 'Geneva photo 3'
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(maxNumber)}`,
+        description: 'Geneva photo 4'
       }
     ]
   }

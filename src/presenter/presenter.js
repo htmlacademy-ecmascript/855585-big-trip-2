@@ -7,11 +7,7 @@ import {render} from '../render.js';
 //Создадим класс, включающий в себя отрисовку остальных связанных компонентов
 export default class Presenter {
   pointsListViewComponent = new PointsListView();
-  pointViewComponent = new PointView();
-  creationFormViewComponent = new CreationFormView();
-  editFormViewComponent = new EditFormView();
 
-  //Конструируем класс
   constructor({container, pointsModel}) {
   //Данные из main.js сохранили внутри класса
     this.container = container;
@@ -21,13 +17,16 @@ export default class Presenter {
   //Отрисовка компонентов
   init() {
     this.points = [...this.pointsModel.getPoints()];
+    this.offers = [...this.pointsModel.getOffers()];
+    this.destinations = [...this.pointsModel.getDestinations()];
+
     //Отрисовка формы редактирвоания в списке
-    render(this.editFormViewComponent, this.pointsListViewComponent.getElement());
-    render(this.creationFormViewComponent, this.pointsListViewComponent.getElement());
+    render(new EditFormView({point: this.points[0], offers: this.offers, destinations: this.destinations}), this.pointsListViewComponent.getElement());
+    render(new CreationFormView({point: this.points[1], offers: this.offers, destinations: this.destinations}), this.pointsListViewComponent.getElement());
     render(this.pointsListViewComponent, this.container);
     //Отрисовка нескольких компнонентов точки маршрута по количеству данных в модели
-    for (let i = 0; i < this.points.length; i++) {
-      render(new PointView({point: this.points[i]}), this.pointsListViewComponent.getElement());
+    for (let i = 2; i < this.points.length; i++) {
+      render(new PointView({point: this.points[i], offers: this.offers, destinations: this.destinations}), this.pointsListViewComponent.getElement());
     }
   }
 }
