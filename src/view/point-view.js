@@ -1,5 +1,5 @@
 import {createElement} from '../render.js';
-import {humanizeTaskDueDate} from '../util.js';
+import {humanizeTaskDueDate, calculatesTravelTime} from '../util.js';
 import {TIME_FORMAT, DATE_FORMAT} from '../const.js';
 
 function createPointOffersTemplate(pointOffers, point) {
@@ -28,6 +28,7 @@ function createPointViewTemplate(point, offers, destinations) {
   const date = humanizeTaskDueDate(dateTo, DATE_FORMAT);
   const startTime = humanizeTaskDueDate(dateFrom, TIME_FORMAT);
   const endTime = humanizeTaskDueDate(dateTo, TIME_FORMAT);
+  const travelTime = calculatesTravelTime(dateFrom, dateTo);
 
   //Проверяем в избранном ли задача
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
@@ -45,7 +46,7 @@ function createPointViewTemplate(point, offers, destinations) {
                     &mdash;
                     <time class="event__end-time" datetime="${dateTo}">${endTime}</time>
                   </p>
-                  <p class="event__duration">30M</p>
+                  <p class="event__duration">${travelTime}М</p>
                 </div>
                 <p class="event__price">
                   &euro;&nbsp;<span class="event__price-value">${basePrice}</span>

@@ -8,13 +8,15 @@ function getRandomInteger(integer) {
   return Math.floor(Math.random() * integer);
 }
 
-function formattedTime(date) {
-  return `${date.getUTCHours().toString().padStart(2, '0') }:${ date.getUTCMinutes().toString().padStart(2, '0')}`;
-}
-
 function humanizeTaskDueDate(dueDate, dateFormat) {
   return dueDate ? dayjs(dueDate).format(dateFormat) : '';
 }
+
+function calculatesTravelTime(dateFrom, dateTo) {
+  const date1 = dayjs(dateTo);
+  return date1.diff(dateFrom, 'minute');
+}
+
 
 function createFormOffersTemplate(pointOffers, point) {
   return pointOffers
@@ -42,4 +44,4 @@ function createEventTypeItem (offers) {
 </div>`).join('');
 }
 
-export {getRandomArrayElement, getRandomInteger, formattedTime, humanizeTaskDueDate, createFormOffersTemplate, createDestinationList, createEventTypeItem};
+export {getRandomArrayElement, getRandomInteger, humanizeTaskDueDate, calculatesTravelTime, createFormOffersTemplate, createDestinationList, createEventTypeItem};
