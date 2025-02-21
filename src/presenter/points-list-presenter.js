@@ -26,12 +26,12 @@ export default class PointsListPresenter {
   }
 
   renderComponents() {
-    render(new EditFormView({ point: this.points[0], offers: this.offers, destinations: this.destinations }), this.pointsListViewComponent.getElement());
-    render(new CreationFormView({ point: this.points[1], offers: this.offers, destinations: this.destinations }), this.pointsListViewComponent.getElement());
+    render(new EditFormView({ point: this.points[0], offers: this.offers, destinations: this.destinations }), this.pointsListViewComponent.element);
+    render(new CreationFormView({ point: this.points[1], offers: this.offers, destinations: this.destinations }), this.pointsListViewComponent.element);
     render(this.pointsListViewComponent, this.container);
 
     for (let i = 2; i < this.points.length; i++) {
-      render(new PointView({ point: this.points[i], offers: this.offers, destinations: this.destinations }), this.pointsListViewComponent.getElement());
+      render(new PointView({ point: this.points[i], offers: this.offers, destinations: this.destinations }), this.pointsListViewComponent.element);
     }
   }
 }

@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {humanizeTaskDueDate, calculatesTravelTime} from '../util.js';
 import {TIME_FORMAT, DATE_FORMAT} from '../const.js';
 
@@ -68,27 +68,20 @@ function createPointViewTemplate(point, offers, destinations) {
             </li>`;
 }
 
-export default class PointView {
+export default class PointView extends AbstractView {
+  #point = null;
+  #offers = null;
+  #destinations = null;
   //Опишем конструктор с помощью деструктуризации извлекаем ключ point c описанием точки
   constructor({ point, offers, destinations}) {
-    this.point = point;
-    this.offers = offers;
-    this.destinations = destinations;
+    super();//вызываем конструктор родительского класса AbstractView
+    this.#point = point;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
-  getTemplate() {
+  get template() {
     //Передаем аргументом объект с описанием точки
-    return createPointViewTemplate(this.point, this.offers, this.destinations);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+    return createPointViewTemplate(this.#point, this.#offers, this.#destinations);
   }
 }

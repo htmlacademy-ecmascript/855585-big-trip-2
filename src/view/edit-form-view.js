@@ -1,4 +1,4 @@
-import {createElement} from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
 import {createFormOffersTemplate, humanizeTaskDueDate, createDestinationList, createEventTypeItem} from '../util.js';
 import {DATE_TIME_FORMAT} from '../const.js';
 
@@ -84,26 +84,19 @@ function createEditFormViewTemplate(point, offers, destinations) {
               </form>`;
 }
 
-export default class EditFormView {
+export default class EditFormView extends AbstractView {
+  #point = null;
+  #offers = null;
+  #destinations = null;
+
   constructor({point, offers, destinations}) {
-    this.point = point;
-    this.offers = offers;
-    this.destinations = destinations;
+    super();//вызываем конструктор родительского класса AbstractView
+    this.#point = point;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
-  getTemplate() {
-    return createEditFormViewTemplate(this.point, this.offers, this.destinations);
+  get template() {
+    return createEditFormViewTemplate(this.#point, this.#offers, this.#destinations);
   }
-
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
-
 }
