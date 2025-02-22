@@ -2,11 +2,11 @@ import {offers} from '../mock/offers.js';
 
 export default class OffersModel {
 
-  offers = offers;
+  #offers = offers;
 
   //Получим данные из свойства offers
-  getOffers() {
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 }
 
