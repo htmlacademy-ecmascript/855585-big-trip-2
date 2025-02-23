@@ -102,7 +102,8 @@ export default class CreationFormView extends AbstractView {
   #offers = null;
   #destinations = null;
 
-  constructor({ point, offers, destinations }) {
+
+  constructor({point, offers, destinations}) {
     super();
     this.#point = point;
     this.#offers = offers;

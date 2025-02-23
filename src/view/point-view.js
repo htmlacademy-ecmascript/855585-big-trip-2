@@ -72,13 +72,21 @@ export default class PointView extends AbstractView {
   #point = null;
   #offers = null;
   #destinations = null;
+  #handleClick = null;
   //Опишем конструктор с помощью деструктуризации извлекаем ключ point c описанием точки
-  constructor({ point, offers, destinations}) {
+  constructor({ point, offers, destinations, onClick}) {
     super();//вызываем конструктор родительского класса AbstractView
     this.#point = point;
     this.#offers = offers;
     this.#destinations = destinations;
+    this.#handleClick = onClick;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
   }
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleClick();
+  };
 
   get template() {
     //Передаем аргументом объект с описанием точки
