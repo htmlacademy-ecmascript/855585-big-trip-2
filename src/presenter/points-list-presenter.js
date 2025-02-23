@@ -36,6 +36,10 @@ export default class PointsListPresenter {
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
+    this.#renderPointsList();
+  }
+
+  #renderPointsList() {
     render(this.#filtersView, this.#filtersContainer);
     render(this.#sortingView, this.#container);
     render(this.#pointsListViewComponent, this.#container);
