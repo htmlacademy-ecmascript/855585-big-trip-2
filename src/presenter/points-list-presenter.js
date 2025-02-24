@@ -5,6 +5,7 @@ import PointsListView from '../view/points-list-view.js';
 import PointView from '../view/point-view.js';
 import {isEscapeKey} from '../util.js';
 import EditFormView from '../view/edit-form-view.js';
+import NoPointView from '../view/no-point-view.js';
 
 //Создадим класс, включающий в себя отрисовку остальных связанных компонентов
 export default class PointsListPresenter {
@@ -21,6 +22,7 @@ export default class PointsListPresenter {
   #filtersView = new FiltersView();
   #sortingView = new SortingView();
   #pointsListViewComponent = new PointsListView();
+  #noPointViewComponent = new NoPointView();
 
   constructor({container, filtersContainer, pointsModel, offersModel, destinationsModel}) {
   //Данные из main.js сохранили внутри класса
@@ -36,13 +38,17 @@ export default class PointsListPresenter {
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
-    this.#renderPointsList();
+    this.#renderComponents();
   }
 
-  #renderPointsList() {
+  #renderComponents() {
     render(this.#filtersView, this.#filtersContainer);
     render(this.#sortingView, this.#container);
     render(this.#pointsListViewComponent, this.#container);
+
+    if(this.#points.length === 0) {
+      this.#renderEmptyPointsList();
+    }
 
     for (let i = 0; i < this.#points.length; i++) {
       this.renderPoint(this.#points[i]);
@@ -88,5 +94,9 @@ export default class PointsListPresenter {
     }
 
     render(pointViewComponent, this.#pointsListViewComponent.element);
+  }
+
+  #renderEmptyPointsList() {
+    render(this.#noPointViewComponent, this.#pointsListViewComponent.element);
   }
 }
