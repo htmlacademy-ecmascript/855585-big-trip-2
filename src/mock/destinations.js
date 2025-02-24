@@ -1,5 +1,4 @@
-import {getRandomInteger} from '../util.js';
-
+import { getRandomInteger } from '../utils/common.js';
 const maxNumber = 100;
 //Данные для пунктов назначения
 export const destinations = [

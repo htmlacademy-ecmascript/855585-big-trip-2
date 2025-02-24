@@ -3,7 +3,7 @@ import FiltersView from '../view/filters-view.js';
 import SortingView from '../view/sorting-view.js';
 import PointsListView from '../view/points-list-view.js';
 import PointView from '../view/point-view.js';
-import {isEscapeKey} from '../util.js';
+import {isEscapeKey} from '../utils/common.js';
 import EditFormView from '../view/edit-form-view.js';
 import NoPointView from '../view/no-point-view.js';
 
