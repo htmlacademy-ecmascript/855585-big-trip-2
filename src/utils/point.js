@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+dayjs.extend(isBetween);
 
 function humanizeTaskDueDate(dueDate, dateFormat) {
   return dueDate ? dayjs(dueDate).format(dateFormat) : '';
@@ -35,4 +37,20 @@ function createEventTypeItem (offers) {
 </div>`).join('');
 }
 
-export {humanizeTaskDueDate, calculatesTravelTime, createFormOffersTemplate, createDestinationList, createEventTypeItem};
+function isPointsPassed(dueDate) {
+  return dueDate && dayjs().isAfter(dueDate, 'D');
+}
+
+//Cписок запланированных точек маршрута
+function isPointsPlanned(dueDate) {
+  return dueDate && dayjs().isBefore(dueDate, 'D');
+}
+
+//Cписок текущих точек маршрута
+
+function isPointsCurrent(startDate, endDate) {
+  dayjs().isBetween(dayjs(startDate), dayjs(endDate), null, '[]');
+}
+
+
+export {humanizeTaskDueDate, calculatesTravelTime, createFormOffersTemplate, createDestinationList, createEventTypeItem, isPointsPassed, isPointsPlanned, isPointsCurrent};

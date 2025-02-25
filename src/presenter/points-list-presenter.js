@@ -42,7 +42,7 @@ export default class PointsListPresenter {
   }
 
   #renderComponents() {
-    render(this.#filtersView, this.#filtersContainer);
+    // render(this.#filtersView, this.#filtersContainer);
     render(this.#sortingView, this.#container);
     render(this.#pointsListViewComponent, this.#container);
 
