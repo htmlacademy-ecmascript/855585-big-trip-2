@@ -2,9 +2,6 @@ import PointsListPresenter from './presenter/points-list-presenter.js';
 import PointsModel from './model/points-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
-import {generateFilter} from './mock/filter.js';
-import FiltersView from './view/filters-view.js';
-import { render } from './framework/render.js';
 
 const bodyElement = document.body;
 const eventsContainerElement = bodyElement.querySelector('.trip-events');
@@ -22,8 +19,5 @@ const pointsListPresenter = new PointsListPresenter({
   offersModel,
   destinationsModel
 });
-
-const filters = generateFilter((pointsModel.points));
-render(new FiltersView({filters}), filtersContainerElement);
 
 pointsListPresenter.init();

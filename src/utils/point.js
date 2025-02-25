@@ -38,19 +38,18 @@ function createEventTypeItem (offers) {
 }
 
 function isPointsPassed(dueDate) {
-  return dueDate && dayjs().isAfter(dueDate, 'D');
+  const now = dayjs();
+  return dayjs(dueDate).isBefore(now, 'day');
 }
 
-//Cписок запланированных точек маршрута
 function isPointsPlanned(dueDate) {
-  return dueDate && dayjs().isBefore(dueDate, 'D');
+  const now = dayjs();
+  return dayjs(dueDate).isAfter(now, 'day');
 }
-
-//Cписок текущих точек маршрута
 
 function isPointsCurrent(startDate, endDate) {
-  dayjs().isBetween(dayjs(startDate), dayjs(endDate), null, '[]');
+  const now = dayjs();
+  return now.isBetween(dayjs(startDate), dayjs(endDate), 'day', '[]');
 }
-
 
 export {humanizeTaskDueDate, calculatesTravelTime, createFormOffersTemplate, createDestinationList, createEventTypeItem, isPointsPassed, isPointsPlanned, isPointsCurrent};

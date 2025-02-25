@@ -1,13 +1,18 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import {FilterMessage} from '../const.js';
 
-function createNoPointViewTemplate() {
-  return `<p class="trip-events__msg">
-              Click New Event to create your first point
-          </p>`;
+function createNoPointViewTemplate(messageType) {
+  return `<p class="trip-events__msg">${FilterMessage[messageType]}</p>`;
 }
 
 export default class NoPointView extends AbstractView {
+  #messageType = null;
+  constructor({messageType}) {
+    super();
+    this.#messageType = messageType;
+  }
+
   get template() {
-    return createNoPointViewTemplate();
+    return createNoPointViewTemplate(this.#messageType);
   }
 }

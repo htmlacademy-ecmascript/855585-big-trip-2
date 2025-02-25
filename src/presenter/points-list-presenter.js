@@ -6,6 +6,7 @@ import PointView from '../view/point-view.js';
 import {isEscapeKey} from '../utils/common.js';
 import EditFormView from '../view/edit-form-view.js';
 import NoPointView from '../view/no-point-view.js';
+import {generateFilter} from '../mock/filter.js';
 
 //Создадим класс, включающий в себя отрисовку остальных связанных компонентов
 export default class PointsListPresenter {
@@ -19,10 +20,10 @@ export default class PointsListPresenter {
   #offers = [];
   #destinations = [];
 
-  #filtersView = new FiltersView();
+  #filtersView = null;
   #sortingView = new SortingView();
   #pointsListViewComponent = new PointsListView();
-  #noPointViewComponent = new NoPointView();
+  #noPointViewComponent = new NoPointView({messageType: 'EVERYTHING'});
 
   constructor({container, filtersContainer, pointsModel, offersModel, destinationsModel}) {
   //Данные из main.js сохранили внутри класса
@@ -31,6 +32,10 @@ export default class PointsListPresenter {
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
+
+    const filters = generateFilter((this.#pointsModel.points));
+
+    this.#filtersView = new FiltersView({filters});
   }
 
   init() {
@@ -42,7 +47,7 @@ export default class PointsListPresenter {
   }
 
   #renderComponents() {
-    // render(this.#filtersView, this.#filtersContainer);
+    render(this.#filtersView, this.#filtersContainer);
     render(this.#sortingView, this.#container);
     render(this.#pointsListViewComponent, this.#container);
 
