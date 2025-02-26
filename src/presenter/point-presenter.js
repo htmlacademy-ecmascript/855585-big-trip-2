@@ -1,4 +1,4 @@
-import {render, replace} from '../framework/render.js';
+import {remove, render, replace} from '../framework/render.js';
 import PointView from '../view/point-view.js';
 import {isEscapeKey} from '../utils/common.js';
 import EditFormView from '../view/edit-form-view.js';
@@ -6,8 +6,8 @@ import EditFormView from '../view/edit-form-view.js';
 export default class PointPresenter {
   #pointListContainer = null;
 
-  #pointViewComponent = null;
-  #editFormViewComponent = null;
+  #pointComponent = null;
+  #editFormComponent = null;
 
   #point = null;
 
@@ -25,8 +25,12 @@ export default class PointPresenter {
   init(point) {
     this.#point = point;
 
+    //Создадим переменные для экземпляров вью (там будет либо null либо соотв-й экземпляр))
+    const prevPointComponent = this.#pointComponent;
+    const prevEditFormComponent = this.#editFormComponent;
+
     //Создадим экземпляры наших вью
-    this.#pointViewComponent = new PointView({
+    this.#pointComponent = new PointView({
       point: this.#point,
       offers: this.#offers,
       destinations: this.#destinations,
@@ -36,7 +40,7 @@ export default class PointPresenter {
       }
     });
 
-    this.#editFormViewComponent = new EditFormView({
+    this.#editFormComponent = new EditFormView({
       point: this.#point,
       offers: this.#offers,
       destinations: this.#destinations,
@@ -46,17 +50,42 @@ export default class PointPresenter {
       }
     });
 
-    //Отрендерим вью
-    render(this.#pointViewComponent, this.#pointListContainer);
+    //Проверяем не равны ли экзмепляры null
+    if(prevPointComponent === null || prevEditFormComponent || null) {
+      //Отрендерим вью
+      render(this.#pointComponent, this.#pointListContainer);
+      return;
+    }
+
+    //Проверям нет ли в dom дереве отрисованного компонента точки (обращаемся prevPointComponent.element с сотоянием)
+    if(this.#pointListContainer.contains(prevPointComponent.element)) {
+      //Заменяем старый компонент на новый
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    //Проверям нет ли в dom дереве отрисованного компонента формы редктирования
+    if(this.#pointListContainer.contains(prevEditFormComponent.element)) {
+      replace(this.#editFormComponent, prevEditFormComponent);
+    }
+
+    //Удаляем старые компоненты
+    remove(prevPointComponent);
+    remove(prevEditFormComponent);
+  }
+
+  //Метод для удаления компонентов точки и формы
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#editFormComponent);
   }
 
   //Бывшие функции метода renderPoint стали полноценными функциями
   #replacePointToForm() {
-    replace(this.#editFormViewComponent, this.#pointViewComponent);
+    replace(this.#editFormComponent, this.#pointComponent);
   }
 
   #replaceFormToPoint() {
-    replace(this.#pointViewComponent, this.#editFormViewComponent);
+    replace(this.#pointComponent, this.#editFormComponent);
   }
 
   #escKeydownHandler = (evt) => {

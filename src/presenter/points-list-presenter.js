@@ -20,8 +20,8 @@ export default class PointsListPresenter {
 
   #filtersView = null;
   #sortingView = new SortingView();
-  #pointsListViewComponent = new PointsListView();
-  #noPointViewComponent = new NoPointView({messageType: 'EVERYTHING'});
+  #pointsListComponent = new PointsListView();
+  #noPointComponent = new NoPointView({messageType: 'EVERYTHING'});
 
   constructor({container, filtersContainer, pointsModel, offersModel, destinationsModel}) {
   //Данные из main.js сохранили внутри класса
@@ -59,7 +59,7 @@ export default class PointsListPresenter {
   }
 
   #renderPointsList() {
-    render(this.#pointsListViewComponent, this.#container);
+    render(this.#pointsListComponent, this.#container);
 
     if(this.#points.length === 0) {
       this.#renderEmptyPointsList();
@@ -72,7 +72,7 @@ export default class PointsListPresenter {
 
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({
-      pointListContainer: this.#pointsListViewComponent.element,
+      pointListContainer: this.#pointsListComponent.element,
       offers: this.#offers,
       destinations: this.#destinations
     });
@@ -81,7 +81,7 @@ export default class PointsListPresenter {
   }
 
   #renderEmptyPointsList() {
-    render(this.#noPointViewComponent, this.#pointsListViewComponent.element);
+    render(this.#noPointComponent, this.#pointsListComponent.element);
   }
 
   #renderPoints(from, to) {
