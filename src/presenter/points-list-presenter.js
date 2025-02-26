@@ -47,8 +47,20 @@ export default class PointsListPresenter {
   }
 
   #renderComponents() {
+    this.#renderFilter();
+    this.#renderSort();
+    this.#renderPointsList();
+  }
+
+  #renderFilter() {
     render(this.#filtersView, this.#filtersContainer);
+  }
+
+  #renderSort() {
     render(this.#sortingView, this.#container);
+  }
+
+  #renderPointsList() {
     render(this.#pointsListViewComponent, this.#container);
 
     if(this.#points.length === 0) {
@@ -103,5 +115,9 @@ export default class PointsListPresenter {
 
   #renderEmptyPointsList() {
     render(this.#noPointViewComponent, this.#pointsListViewComponent.element);
+  }
+
+  #renderPoints(from, to) {
+    this.#points.slice(from, to).forEach((point) => this.renderPoint(point));
   }
 }
