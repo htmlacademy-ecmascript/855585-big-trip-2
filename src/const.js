@@ -21,4 +21,19 @@ const DESTINATIONS = [
   'Chamonix'
 ];
 
-export {TIME_FORMAT, DATE_FORMAT, DATE_TIME_FORMAT, POINT_TYPES, DESTINATIONS};
+const FilterType = {
+  EVERYTHING:'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST:'past',
+};
+
+const FilterMessage = {
+  EVERYTHING: 'Click New Event to create your first point',
+  PAST: 'There are no past events now',
+  PRESENT: 'There are no present events now',
+  FUTURE: 'There are no future events now',
+};
+
+
+export {TIME_FORMAT, DATE_FORMAT, DATE_TIME_FORMAT, POINT_TYPES, DESTINATIONS, FilterType, FilterMessage};
