@@ -1,12 +1,10 @@
-import {render, replace} from '../framework/render.js';
+import {render} from '../framework/render.js';
 import FiltersView from '../view/filters-view.js';
 import SortingView from '../view/sorting-view.js';
 import PointsListView from '../view/points-list-view.js';
-import PointView from '../view/point-view.js';
-import {isEscapeKey} from '../utils/common.js';
-import EditFormView from '../view/edit-form-view.js';
 import NoPointView from '../view/no-point-view.js';
 import {generateFilter} from '../mock/filter.js';
+import PointPresenter from './point-presenter.js';
 
 //Создадим класс, включающий в себя отрисовку остальных связанных компонентов
 export default class PointsListPresenter {
@@ -68,49 +66,18 @@ export default class PointsListPresenter {
     }
 
     for (let i = 0; i < this.#points.length; i++) {
-      this.renderPoint(this.#points[i]);
+      this.#renderPoint(this.#points[i]);
     }
   }
 
-  renderPoint(point) {
-
-    const escKeydownHandler = (evt) => {
-      if (isEscapeKey) {
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeydownHandler);
-      }
-    };
-
-    const pointViewComponent = new PointView({
-      point,
+  #renderPoint(point) {
+    const pointPresenter = new PointPresenter({
+      pointListContainer: this.#pointsListViewComponent.element,
       offers: this.#offers,
-      destinations: this.#destinations,
-      onClick: () => {
-        replacePointToForm();
-        document.addEventListener('keydown', escKeydownHandler);
-      }
+      destinations: this.#destinations
     });
 
-    const editFormViewComponent = new EditFormView({
-      point,
-      offers: this.#offers,
-      destinations: this.#destinations,
-      onSubmit: () => {
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeydownHandler);
-      }
-    });
-
-    function replacePointToForm() {
-      replace(editFormViewComponent, pointViewComponent);
-    }
-
-    function replaceFormToPoint() {
-      replace(pointViewComponent, editFormViewComponent);
-    }
-
-    render(pointViewComponent, this.#pointsListViewComponent.element);
+    pointPresenter.init(point);
   }
 
   #renderEmptyPointsList() {
@@ -118,6 +85,6 @@ export default class PointsListPresenter {
   }
 
   #renderPoints(from, to) {
-    this.#points.slice(from, to).forEach((point) => this.renderPoint(point));
+    this.#points.slice(from, to).forEach((point) => this.#renderPoint(point));
   }
 }
