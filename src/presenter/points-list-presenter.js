@@ -5,6 +5,7 @@ import PointsListView from '../view/points-list-view.js';
 import NoPointView from '../view/no-point-view.js';
 import {generateFilter} from '../mock/filter.js';
 import PointPresenter from './point-presenter.js';
+import {updateItem} from '../utils/common.js';
 
 //Создадим класс, включающий в себя отрисовку остальных связанных компонентов
 export default class PointsListPresenter {
@@ -22,6 +23,8 @@ export default class PointsListPresenter {
   #sortingView = new SortingView();
   #pointsListComponent = new PointsListView();
   #noPointComponent = new NoPointView({messageType: 'EVERYTHING'});
+
+  #pointPresenters = new Map();
 
   constructor({container, filtersContainer, pointsModel, offersModel, destinationsModel}) {
   //Данные из main.js сохранили внутри класса
@@ -50,12 +53,22 @@ export default class PointsListPresenter {
     this.#renderPointsList();
   }
 
+  #handlePointChange = (updatePoint) => {
+    this.#points = updateItem(this.#points, updatePoint);
+    this.#pointPresenters.get(updatePoint.id).init(updatePoint);
+  };
+
   #renderFilter() {
     render(this.#filtersView, this.#filtersContainer);
   }
 
   #renderSort() {
     render(this.#sortingView, this.#container);
+  }
+
+  #clearPointsList() {
+    this.#pointPresenters.forEach((presenter) => presenter.destrоy());
+    this.#pointPresenters.clear();
   }
 
   #renderPointsList() {
@@ -74,10 +87,14 @@ export default class PointsListPresenter {
     const pointPresenter = new PointPresenter({
       pointListContainer: this.#pointsListComponent.element,
       offers: this.#offers,
-      destinations: this.#destinations
+      destinations: this.#destinations,
+      onDataChange: this.#handlePointChange
     });
 
     pointPresenter.init(point);
+    //Сохраняем созданный экземпляр (this.#pointPresenters - экземпляр коллекции Map)
+    // set передаем ключ (id) и сами данные экземпляр pointPresenter
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderEmptyPointsList() {
