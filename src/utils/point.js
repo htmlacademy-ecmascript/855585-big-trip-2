@@ -8,8 +8,15 @@ function humanizeTaskDueDate(dueDate, dateFormat) {
 
 function calculatesTravelTime(dateFrom, dateTo) {
   const date1 = dayjs(dateTo);
-  return date1.diff(dateFrom, 'minute');
+  const date2 = dayjs(dateFrom);
+
+  const days = date1.diff(date2, 'day');
+  const hours = date1.diff(date2.add(days, 'day'), 'hour');
+  const minutes = date1.diff(date2.add(days, 'day').add(hours, 'hour'), 'minute');
+
+  return `${days ? `${days}D` : ''} ${hours ? `${hours}H` : ''} ${minutes}`;
 }
+
 
 function createFormOffersTemplate(pointOffers, point) {
   return pointOffers
