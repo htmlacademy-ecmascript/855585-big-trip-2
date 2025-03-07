@@ -6,6 +6,11 @@ function humanizeTaskDueDate(dueDate, dateFormat) {
   return dueDate ? dayjs(dueDate).format(dateFormat) : '';
 }
 
+function calculatesTravelTimeInMinutes(dateFrom, dateTo) {
+  const date1 = dayjs(dateTo);
+  return date1.diff(dateFrom, 'minute');
+}
+
 function calculatesTravelTime(dateFrom, dateTo) {
   const date1 = dayjs(dateTo);
   const date2 = dayjs(dateFrom);
@@ -86,8 +91,8 @@ function sortPointByPrice(pointA, pointB) {
 }
 
 function sortPointByTime(pointA, pointB) {
-  const durationA = calculatesTravelTime(pointA.dateFrom, pointA.dateTo);
-  const durationB = calculatesTravelTime(pointB.dateFrom, pointB.dateTo);
+  const durationA = calculatesTravelTimeInMinutes(pointA.dateFrom, pointA.dateTo);
+  const durationB = calculatesTravelTimeInMinutes(pointB.dateFrom, pointB.dateTo);
   return durationB - durationA;
 }
 

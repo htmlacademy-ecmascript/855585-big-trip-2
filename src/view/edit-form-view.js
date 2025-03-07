@@ -180,7 +180,6 @@ export default class EditFormView extends AbstractStatefulView {
       this.element.querySelector('#event-start-time-1'), {
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.startDate,
-        maxDate: this._state.dateTo,
         onChange: this.#changeStartDateHandler
       }
     );
@@ -206,7 +205,6 @@ export default class EditFormView extends AbstractStatefulView {
     this.updateElement({
       endDate: userDate,
     });
-    this.#datepickerStart.set('maxDate', userDate);
   };
 
   removeElement() {
