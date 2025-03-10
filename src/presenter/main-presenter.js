@@ -43,6 +43,11 @@ export default class MainPresenter {
     this.#filtersComponent = new FiltersView({filters});
   }
 
+  get points() {
+    return this.#pointsModel.points;
+  }
+
+
   init() {
     this.#points = [...this.#pointsModel.points];
     this.#offers = [...this.#offersModel.offers];
@@ -80,9 +85,6 @@ export default class MainPresenter {
       case SortType.PRICE.text:
         this.#points.sort(sortPointByPrice);
         break;
-      // default:
-      //   // Запишем в points исходный массив
-      //   this.#points = [...this.#sourcedPoints];
     }
     this.#currentSortType = sortType;
   }
