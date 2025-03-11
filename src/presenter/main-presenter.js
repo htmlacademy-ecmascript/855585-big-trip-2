@@ -5,7 +5,6 @@ import PointsListView from '../view/points-list-view.js';
 import NoPointView from '../view/no-point-view.js';
 import {generateFilter} from '../mock/filter.js';
 import PointPresenter from './point-presenter.js';
-import {updateItem} from '../utils/common.js';
 import {SortType} from '../const.js';
 import {sortPointByDate, sortPointByPrice, sortPointByTime} from '../utils/point.js';
 
@@ -17,7 +16,6 @@ export default class MainPresenter {
   #offersModel = null;
   #destinationsModel = null;
 
-  #points = [];
   #offers = [];
   #destinations = [];
 
@@ -28,7 +26,7 @@ export default class MainPresenter {
 
   #pointPresenters = new Map();//при замене на Set ошибка, что нет метода set
   #currentSortType = SortType.DAY;
-  #sourcedPoints = [];
+
 
   constructor({container, filtersContainer, pointsModel, offersModel, destinationsModel}) {
   //Данные из main.js сохранили внутри класса
@@ -44,16 +42,23 @@ export default class MainPresenter {
   }
 
   get points() {
+    switch (this.#currentSortType) {
+      case SortType.DAY.text:
+        return [...this.#pointsModel.points].sort(sortPointByDate);
+      case SortType.TIME.text:
+        return [...this.#pointsModel.points].sort(sortPointByTime);
+      case SortType.PRICE.text:
+        return [...this.#pointsModel.points].sort(sortPointByPrice);
+    }
+
     return this.#pointsModel.points;
   }
 
 
   init() {
-    this.#points = [...this.#pointsModel.points];
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
-    this.#sourcedPoints = [...this.#pointsModel.points];
 
     this.#renderComponents();
   }
@@ -65,8 +70,8 @@ export default class MainPresenter {
   }
 
   #handlePointChange = (updatedPoint) => {
-    this.#points = updateItem(this.#points, updatedPoint);
-    this.#sourcedPoints = updateItem(this.#sourcedPoints, updatedPoint);
+    //Здесь будем вызывать обновление модели
+
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 
@@ -74,31 +79,15 @@ export default class MainPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #sortPoints(sortType) {
-    switch (sortType) {
-      case SortType.DAY.text:
-        this.#points.sort(sortPointByDate);
-        break;
-      case SortType.TIME.text:
-        this.#points.sort(sortPointByTime);
-        break;
-      case SortType.PRICE.text:
-        this.#points.sort(sortPointByPrice);
-        break;
-    }
-    this.#currentSortType = sortType;
-  }
-
   #handleSortTypeChange = (sortType) => {
     //Сортируем задачи
     if (this.#currentSortType === sortType) {
       return;
     }
 
-    this.#sortPoints(sortType);
-    //Очищаем список
+    this.#currentSortType = sortType;
+
     this.#clearPointsList();
-    //Рендерим список заново;
     this.#renderPointsList();
   };
 
@@ -121,12 +110,12 @@ export default class MainPresenter {
   #renderPointsList() {
     render(this.#pointsListComponent, this.#container);
 
-    if(this.#points.length === 0) {
+    if(this.#pointsModel.points.length === 0) {
       this.#renderEmptyPointsList();
     }
 
-    for (let i = 0; i < this.#points.length; i++) {
-      this.#renderPoint(this.#points[i]);
+    for (let i = 0; i < this.#pointsModel.points.length; i++) {
+      this.#renderPoint(this.#pointsModel.points[i]);
     }
   }
 
