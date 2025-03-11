@@ -68,6 +68,17 @@ const SortType = {
   }
 };
 
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
 
-export {TIME_FORMAT, DATE_FORMAT, DATE_TIME_FORMAT, POINT_TYPES, DESTINATIONS, FilterType, FilterMessage, SortType};
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export {TIME_FORMAT, DATE_FORMAT, DATE_TIME_FORMAT, POINT_TYPES, DESTINATIONS, FilterType, FilterMessage, SortType, UserAction, UpdateType};
 

@@ -36,8 +36,9 @@ export default class MainPresenter {
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
 
-    const filters = generateFilter((this.#pointsModel.points));
+    this.#pointsModel.addObserver(this.#handleModelEvent);
 
+    const filters = generateFilter((this.#pointsModel.points));
     this.#filtersComponent = new FiltersView({filters});
   }
 
@@ -78,6 +79,24 @@ export default class MainPresenter {
   #handleModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
+
+  #handleViewAction = (actionType, updateType, update) => {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
+  };
+
+  //Будет реагировать на изменения модели
+  #handleModelEvent = (updateType, data) => {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
+  };
+
 
   #handleSortTypeChange = (sortType) => {
     //Сортируем задачи
@@ -124,7 +143,7 @@ export default class MainPresenter {
       pointListContainer: this.#pointsListComponent.element,
       offers: this.#offers,
       destinations: this.#destinations,
-      onDataChange: this.#handlePointChange,
+      onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
     });
 

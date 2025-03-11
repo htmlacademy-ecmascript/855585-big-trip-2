@@ -12,6 +12,54 @@ export default class PointsModel extends Observable {
   get points() {
     return this.#points;
   }
+
+  updatePoint(updateType, update) {
+    //Ищем точку по уникальному id
+    const index = this.#points.findIndex((point) => point.id === update.id);
+
+    //Если не находим - выбрасываем ошибку
+    if (index === -1) {
+      throw new Error('Can\'t update unexisting point');
+    }
+
+    //Начинаем выплнять обновление
+    this.#points = [
+      ...this.#points.slice(0, index),
+      update,
+      ...this.#points.slice(index + 1),
+    ];
+
+    //Уведомялем подписчиков о событиии
+    this._notify(updateType, update);
+  }
+
+  //Добавляем в массив инфо по новой точке Передаем тип изменений и объект с изменениями
+  addPoint(updateType, update) {
+    this.#points = [
+      update,
+      ...this.#points,
+    ];
+
+    //Уведомялем подписчиков о событиии
+    this._notify(updateType, update);
+  }
+
+  //Удлаляем эдемент
+  deletePoint(updateType, update) {
+    const index = this.#points.findIndex((point) => point.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting point');
+    }
+
+    this.#points = [
+      ...this.#points.slice(0, index),
+      ...this.#points.slice(index + 1),
+    ];
+
+    //Уведомлем о типе изменений
+    this._notify(updateType);
+  }
 }
 
 
