@@ -1,4 +1,4 @@
-import {render} from '../framework/render.js';
+import {render, remove} from '../framework/render.js';
 import FiltersView from '../view/filters-view.js';
 import SortingView from '../view/sorting-view.js';
 import PointsListView from '../view/points-list-view.js';
@@ -24,7 +24,7 @@ export default class MainPresenter {
   #pointsListComponent = new PointsListView();
   #noPointComponent = new NoPointView({messageType: 'EVERYTHING'});
 
-  #pointPresenters = new Map();//при замене на Set ошибка, что нет метода set
+  #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
 
 
@@ -96,7 +96,6 @@ export default class MainPresenter {
 
   //Будет реагировать на изменения модели
   #handleModelEvent = (updateType, data) => {
-    console.log(updateType, data);
     // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.PATCH:
@@ -105,9 +104,13 @@ export default class MainPresenter {
         break;
       case UpdateType.MINOR:
         // - обновить список (например, когда задача ушла в архив)
+        this.#clearBoard();
+        this.#renderPointsList();
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
+        this.#clearBoard({resetSortType: true});
+        this.#renderPointsList();
         break;
     }
   };
@@ -121,12 +124,14 @@ export default class MainPresenter {
 
     this.#currentSortType = sortType;
 
-    this.#clearPointsList();
+    this.#clearBoard({resetRenderedTaskCount: true});
+    this.#renderSort(); // Добавляем повторный рендер сортировки
     this.#renderPointsList();
   };
 
   #renderSort() {
     this.#sortingComponent = new SortingView({
+      currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
     render(this.#sortingComponent, this.#container);
@@ -136,20 +141,30 @@ export default class MainPresenter {
     render(this.#filtersComponent, this.#filtersContainer);
   }
 
-  #clearPointsList() {
-    this.#pointPresenters.forEach((presenter) => presenter.destroy());
-    this.#pointPresenters.clear();
-  }
-
   #renderPointsList() {
     render(this.#pointsListComponent, this.#container);
 
-    if(this.#pointsModel.points.length === 0) {
+    const points = this.points; // Берем уже отсортированные точки
+
+    if(points.length === 0) {
       this.#renderEmptyPointsList();
     }
 
-    for (let i = 0; i < this.#pointsModel.points.length; i++) {
-      this.#renderPoint(this.#pointsModel.points[i]);
+    for (let i = 0; i < this.points.length; i++) {
+      this.#renderPoint(this.points[i]);
+    }
+  }
+
+  #clearBoard({resetSortType = false} = {}) {
+
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+
+    remove(this.#sortingComponent);
+    remove(this.#noPointComponent);
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DAY;
     }
   }
 

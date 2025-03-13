@@ -104,6 +104,7 @@ function createEditFormViewTemplate(point, offers, destinations) {
 }
 
 export default class EditFormView extends AbstractStatefulView {
+  #handleDeleteClick = null;
   #datepickerStart = null;
   #datepickerEnd = null;
 
@@ -111,12 +112,13 @@ export default class EditFormView extends AbstractStatefulView {
   #destinations = null;
   #handleSubmit = null;
 
-  constructor({point, offers, destinations, onSubmit}) {
+  constructor({point, offers, destinations, onSubmit, onDeleteClick}) {
     super();
 
     this.#offers = offers;
     this.#destinations = destinations;
     this.#handleSubmit = onSubmit;
+    this.#handleDeleteClick = onDeleteClick;
 
     this._setState(EditFormView.parsePointToState(point));
     this._restoreHandlers();
@@ -131,6 +133,7 @@ export default class EditFormView extends AbstractStatefulView {
     this.element.addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#changeTypeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
 
     this.#setDatepicker();
   }
@@ -159,6 +162,11 @@ export default class EditFormView extends AbstractStatefulView {
       destination: selectedDestination.id
     });
 
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditFormView.parseStateToPoint(this._state));
   };
 
   //Сброс компонента к изначальному виду
