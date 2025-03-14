@@ -1,12 +1,12 @@
 import {render, remove} from '../framework/render.js';
-import FiltersView from '../view/filters-view.js';
 import SortingView from '../view/sorting-view.js';
 import PointsListView from '../view/points-list-view.js';
 import NoPointView from '../view/no-point-view.js';
-import {generateFilter} from '../mock/filter.js';
 import PointPresenter from './point-presenter.js';
 import {SortType, UpdateType, UserAction} from '../const.js';
 import {sortPointByDate, sortPointByPrice, sortPointByTime} from '../utils/point.js';
+import { filter } from '../utils/filter.js';
+
 
 //Создадим класс, включающий в себя отрисовку остальных связанных компонентов
 export default class MainPresenter {
@@ -14,6 +14,7 @@ export default class MainPresenter {
   #filtersContainer = null;
   #pointsModel = null;
   #offersModel = null;
+  #filterModel = null;
   #destinationsModel = null;
 
   #offers = [];
@@ -28,33 +29,36 @@ export default class MainPresenter {
   #currentSortType = SortType.DAY;
 
 
-  constructor({container, filtersContainer, pointsModel, offersModel, destinationsModel}) {
+  constructor({container, filtersContainer, pointsModel, offersModel, destinationsModel, filterModel}) {
   //Данные из main.js сохранили внутри класса
     this.#container = container;
     this.#filtersContainer = filtersContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
+    this.#filterModel = filterModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
-
-    const filters = generateFilter((this.#pointsModel.points));
-    this.#filtersComponent = new FiltersView({filters});
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+
+    const filterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[filterType](points);
+
     switch (this.#currentSortType) {
       case SortType.DAY.text:
-        return [...this.#pointsModel.points].sort(sortPointByDate);
+        return filteredPoints.sort(sortPointByDate);
       case SortType.TIME.text:
-        return [...this.#pointsModel.points].sort(sortPointByTime);
+        return filteredPoints.sort(sortPointByTime);
       case SortType.PRICE.text:
-        return [...this.#pointsModel.points].sort(sortPointByPrice);
+        return filteredPoints.sort(sortPointByPrice);
     }
 
-    return this.#pointsModel.points;
+    return filteredPoints;
   }
-
 
   init() {
     this.#offers = [...this.#offersModel.offers];
@@ -65,7 +69,7 @@ export default class MainPresenter {
   }
 
   #renderComponents() {
-    this.#renderFilter();
+    // this.#renderFilter();
     this.#renderSort();
     this.#renderPointsList();
   }
@@ -99,11 +103,11 @@ export default class MainPresenter {
     // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
+        // - обновить часть списка
         this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
+        // - обновить список
         this.#clearBoard();
         this.#renderPointsList();
         break;
@@ -124,22 +128,21 @@ export default class MainPresenter {
 
     this.#currentSortType = sortType;
 
-    this.#clearBoard({resetRenderedTaskCount: true});
-    this.#renderSort(); // Добавляем повторный рендер сортировки
+    this.#clearBoard();
+    this.#renderSort(); // Рендерим сортировку, если она не была отрисована
     this.#renderPointsList();
   };
 
   #renderSort() {
-    this.#sortingComponent = new SortingView({
-      currentSortType: this.#currentSortType,
-      onSortTypeChange: this.#handleSortTypeChange
-    });
-    render(this.#sortingComponent, this.#container);
+    if (!this.#sortingComponent) { // Проверяем, если сортировка уже отрисована
+      this.#sortingComponent = new SortingView({
+        currentSortType: this.#currentSortType,
+        onSortTypeChange: this.#handleSortTypeChange
+      });
+      render(this.#sortingComponent, this.#container);
+    }
   }
 
-  #renderFilter() {
-    render(this.#filtersComponent, this.#filtersContainer);
-  }
 
   #renderPointsList() {
     render(this.#pointsListComponent, this.#container);
@@ -160,7 +163,6 @@ export default class MainPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 
-    remove(this.#sortingComponent);
     remove(this.#noPointComponent);
 
     if (resetSortType) {
