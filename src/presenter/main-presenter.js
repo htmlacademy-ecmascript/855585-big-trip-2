@@ -6,6 +6,7 @@ import PointPresenter from './point-presenter.js';
 import {SortType, UpdateType, UserAction, FilterType} from '../const.js';
 import {sortPointByDate, sortPointByPrice, sortPointByTime} from '../utils/point.js';
 import { filter } from '../utils/filter.js';
+import NewPointPresenter from './new-point-presenter.js';
 
 
 //Создадим класс, включающий в себя отрисовку остальных связанных компонентов
@@ -26,11 +27,12 @@ export default class MainPresenter {
   #noPointComponent = null;
 
   #pointPresenters = new Map();
+  #newPointPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
 
 
-  constructor({container, filtersContainer, pointsModel, offersModel, destinationsModel, filterModel}) {
+  constructor({container, filtersContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewPointDestroy}) {
   //Данные из main.js сохранили внутри класса
     this.#container = container;
     this.#filtersContainer = filtersContainer;
@@ -38,6 +40,15 @@ export default class MainPresenter {
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
+
+    this.#newPointPresenter = new NewPointPresenter({
+      pointListContainer: this.#pointsListComponent.element,///?? без element
+      pointsModel: this.#pointsModel,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewPointDestroy
+    });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -75,6 +86,12 @@ export default class MainPresenter {
     this.#renderPointsList();
   }
 
+  createPoint() {
+    this.#currentSortType = SortType.DAY;///возможно text
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointPresenter.init();
+  }
+
   #handlePointChange = (updatedPoint) => {
     //Здесь будем вызывать обновление модели
 
@@ -82,6 +99,7 @@ export default class MainPresenter {
   };
 
   #handleModeChange = () => {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -161,6 +179,7 @@ export default class MainPresenter {
 
   #clearBoard({resetSortType = false} = {}) {
 
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 

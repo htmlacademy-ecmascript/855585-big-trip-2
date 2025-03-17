@@ -4,19 +4,29 @@ import {DATE_TIME_FORMAT} from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
+
 function createPictures(pictures) {
-  return pictures
-    .map((picture) =>
-      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
-    ).join('');
+  if (Array.isArray(pictures)) {
+    return pictures
+      .map((picture) =>
+        `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
+      )
+      .join('');
+  } else {
+    return ''; // Возвращаем пустую строку или какое-то дефолтное значение
+  }
 }
 
 function createEditFormViewTemplate(point, offers, destinations) {
   const {type, basePrice, dateFrom, dateTo} = point;
 
-  const editFormPointDestination = destinations.find((destination) => destination.id === point.destination);
+  const editFormPointDestination = destinations.find((destination) => destination.id === point.destination) || {};
 
   const pointTypeOffer = offers.find((offer) => offer.type === point.type);
+
+  if (!pointTypeOffer) {
+    return '';
+  }
   const editFormOffersTemplate = createFormOffersTemplate(pointTypeOffer.offers, point.offers);
 
   const destinationPictures = editFormPointDestination
@@ -52,7 +62,7 @@ function createEditFormViewTemplate(point, offers, destinations) {
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${editFormPointDestination.name}" list="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${editFormPointDestination?.name || ''}" list="destination-list-1">
                     <datalist id="destination-list-1">
                       ${destinationListTemplate}
                     </datalist>
@@ -91,7 +101,7 @@ function createEditFormViewTemplate(point, offers, destinations) {
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${editFormPointDestination.description}</p>
+                    <p class="event__destination-description">${editFormPointDestination?.description || ''}</p>
 
                      <div class="event__photos-container">
                       <div class="event__photos-tape">

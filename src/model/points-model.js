@@ -1,5 +1,6 @@
 import {getRandomPoint} from '../mock/points.js';
 import Observable from '../framework/observable.js';
+import dayjs from 'dayjs';
 
 const POINT_COUNT = 5;
 
@@ -11,6 +12,19 @@ export default class PointsModel extends Observable {
   //Получим данные из свойства points
   get points() {
     return this.#points;
+  }
+
+  get newPoint() {
+    return {
+      id: 'new',
+      basePrice: 0,
+      dateFrom: dayjs().toISOString(),
+      dateTo: dayjs().toISOString(),
+      destination: '',
+      isFavorite: false,
+      offers: [],
+      type: 'flight',
+    };
   }
 
   updatePoint(updateType, update) {

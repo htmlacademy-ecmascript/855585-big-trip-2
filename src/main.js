@@ -4,10 +4,13 @@ import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
+import NewPointButtonView from './view/new-point-button-view.js';
+import {render} from './framework/render.js';
 
 const bodyElement = document.body;
 const eventsContainerElement = bodyElement.querySelector('.trip-events');
 const filtersContainerElement = bodyElement.querySelector('.trip-controls__filters');
+const siteHeaderElement = bodyElement.querySelector('.trip-main');
 
 //Создаем экземпляр класса модели точек
 const pointsModel = new PointsModel();
@@ -21,7 +24,8 @@ const mainPresenter = new MainPresenter({
   filterModel,
   pointsModel,
   offersModel,
-  destinationsModel
+  destinationsModel,
+  onNewPointDestroy: handleNewPointFormClose
 });
 
 const filterPresenter = new FilterPresenter({
@@ -29,6 +33,21 @@ const filterPresenter = new FilterPresenter({
   filterModel: filterModel,
   pointsModel: pointsModel,
 });
+
+const newPointButtonComponent = new NewPointButtonView({
+  onClick: handleNewPointButtonClick
+});
+
+function handleNewPointFormClose() {
+  newPointButtonComponent.element.disabled = false;
+}
+
+function handleNewPointButtonClick() {
+  mainPresenter.createPoint();
+  newPointButtonComponent.element.disabled = true;
+}
+
+render(newPointButtonComponent, siteHeaderElement);
 
 mainPresenter.init();
 filterPresenter.init();
