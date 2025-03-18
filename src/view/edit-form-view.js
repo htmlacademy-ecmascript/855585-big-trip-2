@@ -3,6 +3,7 @@ import {createFormOffersTemplate, humanizeTaskDueDate, createDestinationList, cr
 import {DATE_TIME_FORMAT} from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import he from 'he';
 
 
 function createPictures(pictures) {
@@ -13,7 +14,7 @@ function createPictures(pictures) {
       )
       .join('');
   } else {
-    return ''; // Возвращаем пустую строку или какое-то дефолтное значение
+    return '';
   }
 }
 
@@ -81,7 +82,7 @@ function createEditFormViewTemplate(point, offers, destinations) {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(basePrice))}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -143,6 +144,7 @@ export default class EditFormView extends AbstractStatefulView {
     this.element.addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#changeTypeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#changePriceHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
 
     this.#setDatepicker();
@@ -173,6 +175,13 @@ export default class EditFormView extends AbstractStatefulView {
     });
 
   };
+
+  #changePriceHandler = (evt) => {
+    this._setState({
+      basePrice: Number(evt.target.value)
+    });
+  };
+
 
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();

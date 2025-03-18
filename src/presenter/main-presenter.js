@@ -42,7 +42,7 @@ export default class MainPresenter {
     this.#filterModel = filterModel;
 
     this.#newPointPresenter = new NewPointPresenter({
-      pointListContainer: this.#pointsListComponent.element,///?? без element
+      pointListContainer: this.#pointsListComponent.element,
       pointsModel: this.#pointsModel,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
@@ -87,7 +87,7 @@ export default class MainPresenter {
   }
 
   createPoint() {
-    this.#currentSortType = SortType.DAY;///возможно text
+    this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
   }
