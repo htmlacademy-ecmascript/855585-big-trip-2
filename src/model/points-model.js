@@ -6,8 +6,20 @@ const POINT_COUNT = 5;
 
 //Модель точек маршрутов
 export default class PointsModel extends Observable {
-  //Запишем в свойство массив точек
+  #pointsApiService = null;
   #points = Array.from({length: POINT_COUNT}, getRandomPoint);
+
+  constructor({pointsApiService}) {
+    super();
+    this.#pointsApiService = pointsApiService;
+
+    this.#pointsApiService.points.then(() => {
+      // Проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+      // на сервере используется snake_case, а у нас camelCase.
+      // Будем использовать паттерн "Адаптер"
+    });
+  }
+
 
   //Получим данные из свойства points
   get points() {

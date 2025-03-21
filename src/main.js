@@ -6,6 +6,10 @@ import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import {render} from './framework/render.js';
+import PointsApiService from './points-api-service.js';
+
+const AUTHORIZATION = 'Basic rS4gfS44wcl1sa2j';
+const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
 const bodyElement = document.body;
 const eventsContainerElement = bodyElement.querySelector('.trip-events');
@@ -13,7 +17,9 @@ const filtersContainerElement = bodyElement.querySelector('.trip-controls__filte
 const siteHeaderElement = bodyElement.querySelector('.trip-main');
 
 //Создаем экземпляр класса модели точек
-const pointsModel = new PointsModel();
+const pointsModel = new PointsModel({
+  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
+});
 const filterModel = new FilterModel();
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
