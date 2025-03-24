@@ -1,30 +1,33 @@
-import {getRandomPoint} from '../mock/points.js';
 import Observable from '../framework/observable.js';
 import dayjs from 'dayjs';
+import { UpdateType } from '../const.js';
 
-const POINT_COUNT = 5;
 
 //Модель точек маршрутов
 export default class PointsModel extends Observable {
   #pointsApiService = null;
-  #points = Array.from({length: POINT_COUNT}, getRandomPoint);
+  #points = [];
 
   constructor({pointsApiService}) {
     super();
     this.#pointsApiService = pointsApiService;
-
-    this.#pointsApiService.points.then((points) => {
-      // Проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-      // на сервере используется snake_case, а у нас camelCase.
-      // Будем использовать паттерн "Адаптер"
-      console.log(points.map(this.#adaptToClient));
-    });
   }
 
 
   //Получим данные из свойства points
   get points() {
     return this.#points;
+  }
+
+  async init() {
+    try {
+      const points = await this.#pointsApiService.points;
+      this.#points = points.map(this.#adaptToClient);
+    } catch (err) {
+      this.#points = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   get newPoint() {

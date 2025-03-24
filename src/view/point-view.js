@@ -4,6 +4,9 @@ import {TIME_FORMAT, DATE_FORMAT} from '../const.js';
 import he from 'he';
 
 function createPointOffersTemplate(pointOffers, point) {
+  if (!pointOffers || pointOffers.length === 0) {
+    return ''; // Возвращаем пустую строку, если нет предложений
+  }
   return pointOffers
     .map((offer) =>
       point.includes(offer.id)
@@ -21,10 +24,13 @@ function createPointViewTemplate(point, offers, destinations) {
 
   const { basePrice, type, dateFrom, dateTo, isFavorite } = point;
 
-  const pointDestination = destinations.find((destination) => destination.id === point.destination);
 
-  const pointTypeOffer = offers.find((offer) => offer.type === point.type);
+  const pointDestination = destinations.find((destination) => destination.id === point.destination);
+  const pointTypeOffer = offers.find((offer) => offer.type === point.type) || { offers: [] };
+
+  // Передай правильные предложения в функцию createPointOffersTemplate
   const pointOffersTemplate = createPointOffersTemplate(pointTypeOffer.offers, point.offers);
+
 
   const date = humanizeTaskDueDate(dateTo, DATE_FORMAT);
   const startTime = humanizeTaskDueDate(dateFrom, TIME_FORMAT);

@@ -1,10 +1,11 @@
-import {render, remove} from '../framework/render.js';
+import { render, remove, RenderPosition } from '../framework/render.js';
 import SortingView from '../view/sorting-view.js';
 import PointsListView from '../view/points-list-view.js';
 import NoPointView from '../view/no-point-view.js';
+import LoadingView from '../view/loading-view.js';
 import PointPresenter from './point-presenter.js';
-import {SortType, UpdateType, UserAction, FilterType} from '../const.js';
-import {sortPointByDate, sortPointByPrice, sortPointByTime} from '../utils/point.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
+import { sortPointByDate, sortPointByPrice, sortPointByTime } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
 
@@ -24,16 +25,18 @@ export default class MainPresenter {
   #filtersComponent = null;
   #sortingComponent = null;
   #pointsListComponent = new PointsListView();
+  #loadingComponent = new LoadingView();
   #noPointComponent = null;
 
   #pointPresenters = new Map();
   #newPointPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
 
-  constructor({container, filtersContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewPointDestroy}) {
-  //Данные из main.js сохранили внутри класса
+  constructor({ container, filtersContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewPointDestroy }) {
+    //Данные из main.js сохранили внутри класса
     this.#container = container;
     this.#filtersContainer = filtersContainer;
     this.#pointsModel = pointsModel;
@@ -50,12 +53,11 @@ export default class MainPresenter {
       onDestroy: onNewPointDestroy
     });
 
-    this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+
   }
 
   get points() {
-
     this.#filterType = this.#filterModel.filter;
     const points = this.#pointsModel.points;
     const filteredPoints = filter[this.#filterType](points);
@@ -73,11 +75,18 @@ export default class MainPresenter {
   }
 
   init() {
+    this.#handleModelEvent(UpdateType.INIT);
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
 
     this.#renderComponents();
+  }
+
+  initStart() {
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
+    this.#destinationsModel.addObserver(this.#handleModelEvent);
   }
 
   #renderComponents() {
@@ -132,7 +141,12 @@ export default class MainPresenter {
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
-        this.#clearBoard({resetSortType: true});
+        this.#clearBoard({ resetSortType: true });
+        this.#renderPointsList();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderPointsList();
         break;
     }
@@ -165,23 +179,34 @@ export default class MainPresenter {
 
   #renderPointsList() {
     render(this.#pointsListComponent, this.#container);
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     const points = this.points; // Берем уже отсортированные точки
 
-    if(points.length === 0) {
+    if (points.length === 0) {
       this.#renderEmptyPointsList();
+      return;
     }
 
-    for (let i = 0; i < this.points.length; i++) {
-      this.#renderPoint(this.points[i]);
+    for (let i = 0; i < points.length; i++) {
+      this.#renderPoint(points[i]);
     }
   }
 
-  #clearBoard({resetSortType = false} = {}) {
+  #renderLoading() {
+    render(this.#loadingComponent, this.#pointsListComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
+  #clearBoard({ resetSortType = false } = {}) {
 
     this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+
+    remove(this.#loadingComponent);
 
     if (this.#noPointComponent) {
       remove(this.#noPointComponent);
