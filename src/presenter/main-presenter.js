@@ -150,7 +150,6 @@ export default class MainPresenter {
 
 
   #handleSortTypeChange = (sortType) => {
-    //Сортируем задачи
     if (this.#currentSortType === sortType) {
       return;
     }
@@ -158,20 +157,22 @@ export default class MainPresenter {
     this.#currentSortType = sortType;
 
     this.#clearBoard();
-    this.#renderSort(); // Рендерим сортировку, если она не была отрисована
+    this.#renderSort(); // Добавляем пересоздание сортировки
     this.#renderPointsList();
   };
 
   #renderSort() {
-    if (!this.#sortingComponent) { // Проверяем, если сортировка уже отрисована
-      this.#sortingComponent = new SortingView({
-        currentSortType: this.#currentSortType,
-        onSortTypeChange: this.#handleSortTypeChange
-      });
-      render(this.#sortingComponent, this.#container);
+    if (this.#sortingComponent) {
+      remove(this.#sortingComponent);
     }
-  }
 
+    this.#sortingComponent = new SortingView({
+      currentSortType: this.#currentSortType,
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
+    render(this.#sortingComponent, this.#container);
+  }
 
   #renderPointsList() {
     render(this.#pointsListComponent, this.#container);
