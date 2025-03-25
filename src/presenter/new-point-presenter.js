@@ -64,8 +64,15 @@ export default class NewPointPresenter {
       UpdateType.MINOR,
       point,
     );
-    this.destroy();
+
   };
+
+  setSaving() {
+    this.#editFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
 
   #handleDeleteClick = () => {
     this.destroy();

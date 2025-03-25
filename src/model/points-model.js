@@ -30,37 +30,18 @@ export default class PointsModel extends Observable {
     this._notify(UpdateType.INIT);
   }
 
-  get newPoint() {
-    return {
-      id: 'new',
-      basePrice: 0,
-      dateFrom: dayjs().toISOString(),
-      dateTo: dayjs().toISOString(),
-      destination: '',
-      isFavorite: false,
-      offers: [],
-      type: 'flight',
-    };
-  }
-
   async updatePoint(updateType, update) {
-    //Ищем точку по уникальному id
-    const index = this.#points.findIndex((point) => point.id === update.id);
-
-    //Если не находим - выбрасываем ошибку
-    if (index === -1) {
-      throw new Error('Can\'t update unexisting point');
-    }
 
     try {
       //Начинаем выплнять обновление
       const response = await this.#pointsApiService.updatePoint(update);
       const updatedPoint = this.#adaptToClient(response);
-      this.#points = [
-        ...this.#points.slice(0, index),
-        updatedPoint,
-        ...this.#points.slice(index + 1),
-      ];
+
+      this.#points = this.#points.map((point) =>
+        point.id === updatedPoint.id
+          ? updatedPoint
+          : point
+      );
 
       //Уведомялем подписчиков о событиии
       this._notify(updateType, updatedPoint);
@@ -96,24 +77,36 @@ export default class PointsModel extends Observable {
         ...this.#points.slice(0, index),
         ...this.#points.slice(index + 1),
       ];
-      this._notify(updateType);
+      this._notify(updateType, update);
     } catch(err) {
-      throw new Error('Can\'t delete зoint');
+      throw new Error('Can\'t delete point');
     }
   }
 
+  get newPoint() {
+    return {
+      basePrice: 0,
+      dateFrom: dayjs().toISOString(),
+      dateTo: dayjs().toISOString(),
+      destination: '',
+      isFavorite: false,
+      offers: [],
+      type: 'flight',
+    };
+  }
+
+
   #adaptToClient(point) {
     const adaptedPoint = {...point,
+      dateFrom: point['date_from'],
+      dateTo: point['date_to'],
       basePrice: point['base_price'],
-      dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'], // На клиенте дата хранится как экземпляр Date
-      dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
       isFavorite: point['is_favorite'],
     };
 
-    // Ненужные ключи мы удаляем
-    delete adaptedPoint['base_price'];
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
+    delete adaptedPoint['base_price'];
     delete adaptedPoint['is_favorite'];
 
     return adaptedPoint;

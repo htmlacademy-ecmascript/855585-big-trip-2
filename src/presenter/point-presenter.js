@@ -76,7 +76,8 @@ export default class PointPresenter {
 
     //Проверям установлен ли режим редктирования
     if(this.#mode === Mode.EDITING) {
-      replace(this.#editFormComponent, prevEditFormComponent);
+      replace(this.#pointComponent, prevEditFormComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     //Удаляем старые компоненты
@@ -94,6 +95,24 @@ export default class PointPresenter {
     if(this.#mode !== Mode.VIEW) {
       this.#editFormComponent.reset(this.#point);
       this.#replaceFormToView();
+    }
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editFormComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editFormComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
     }
   }
 
