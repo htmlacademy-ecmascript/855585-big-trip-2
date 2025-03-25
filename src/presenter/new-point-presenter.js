@@ -1,6 +1,5 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import EditFormView from '../view/edit-form-view.js';
-import {nanoid} from 'nanoid';
 import {UserAction, UpdateType} from '../const.js';
 import {isEscapeKey} from '../utils/common.js';
 
@@ -63,9 +62,7 @@ export default class NewPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      // Пока нет сервера, который бы после сохранения
-      // выдывал id точки, нужно позаботиться об этом самим
-      {id: nanoid, ...point},
+      point,
     );
     this.destroy();
   };

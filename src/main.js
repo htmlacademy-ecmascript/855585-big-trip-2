@@ -53,13 +53,8 @@ function handleNewPointButtonClick() {
   newPointButtonComponent.element.disabled = true;
 }
 
-// Показываем кнопку, пока не загрузятся все данные
-render(newPointButtonComponent, siteHeaderElement);
-
-
 filterPresenter.init();
-
-
+mainPresenter.init();
 // Основная логика загрузки данных и инициализации
 
 Promise.all([
@@ -69,8 +64,11 @@ Promise.all([
 ]).then(() => {
   console.log('Все данные загружены');
   // mainPresenter.initStart(); // теперь вызывается после загрузки
-  mainPresenter.init();
+
 }).catch((error) => {
   console.error('Ошибка загрузки данных:', error);
+}).finally(() => {
+  // Показываем кнопку, пока не загрузятся все данные
+  render(newPointButtonComponent, siteHeaderElement);
 });
 
