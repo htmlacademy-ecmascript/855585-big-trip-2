@@ -16,17 +16,11 @@ const eventsContainerElement = bodyElement.querySelector('.trip-events');
 const filtersContainerElement = bodyElement.querySelector('.trip-controls__filters');
 const siteHeaderElement = bodyElement.querySelector('.trip-main');
 
-// const pointsApiService = new PointsApiService(END_POINT, AUTHORIZATION);
+const pointsApiService = new PointsApiService(END_POINT, AUTHORIZATION);
 
-const pointsModel = new PointsModel({
-  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
-});
-const destinationsModel = new DestinationsModel({
-  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
-});
-const offersModel = new OffersModel({
-  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
-});
+const pointsModel = new PointsModel({pointsApiService});
+const destinationsModel = new DestinationsModel({pointsApiService});
+const offersModel = new OffersModel({pointsApiService});
 const filterModel = new FilterModel();
 
 //Передадим презентеру кроме контейнера модель точек через конструктор
@@ -62,8 +56,9 @@ function handleNewPointButtonClick() {
 // Показываем кнопку, пока не загрузятся все данные
 render(newPointButtonComponent, siteHeaderElement);
 
+
 filterPresenter.init();
-mainPresenter.init();
+
 
 // Основная логика загрузки данных и инициализации
 
@@ -73,7 +68,8 @@ Promise.all([
   pointsModel.init()
 ]).then(() => {
   console.log('Все данные загружены');
-  mainPresenter.initStart(); // теперь вызывается после загрузки
+  // mainPresenter.initStart(); // теперь вызывается после загрузки
+  mainPresenter.init();
 }).catch((error) => {
   console.error('Ошибка загрузки данных:', error);
 });

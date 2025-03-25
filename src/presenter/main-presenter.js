@@ -75,22 +75,18 @@ export default class MainPresenter {
   }
 
   init() {
-    this.#handleModelEvent(UpdateType.INIT);
+    // this.#handleModelEvent(UpdateType.INIT);
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
+    this.#destinationsModel.addObserver(this.#handleModelEvent);
 
     this.#renderComponents();
   }
 
-  initStart() {
-    this.#pointsModel.addObserver(this.#handleModelEvent);
-    this.#offersModel.addObserver(this.#handleModelEvent);
-    this.#destinationsModel.addObserver(this.#handleModelEvent);
-  }
-
   #renderComponents() {
-    // this.#renderFilter();
     this.#renderSort();
     this.#renderPointsList();
   }
@@ -184,6 +180,10 @@ export default class MainPresenter {
       return;
     }
 
+    if(!this.#destinationsModel.destinations || !this.#offersModel.offers) {
+      return;
+    }
+
     const points = this.points; // Берем уже отсортированные точки
 
     if (points.length === 0) {
@@ -220,8 +220,8 @@ export default class MainPresenter {
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({
       pointListContainer: this.#pointsListComponent.element,
-      offers: this.#offers,
-      destinations: this.#destinations,
+      offers: this.#offersModel.offers,
+      destinations: this.#destinationsModel.destinations,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
     });
@@ -233,6 +233,9 @@ export default class MainPresenter {
   }
 
   #renderEmptyPointsList() {
+    if (this.#noPointComponent) {
+      return;
+    }
     this.#noPointComponent = new NoPointView({
       filterType: this.#filterType
     });
