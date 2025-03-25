@@ -75,7 +75,7 @@ export default class MainPresenter {
   }
 
   init() {
-    // this.#handleModelEvent(UpdateType.INIT);
+
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
@@ -84,6 +84,7 @@ export default class MainPresenter {
     this.#destinationsModel.addObserver(this.#handleModelEvent);
 
     this.#renderComponents();
+    this.#handleModelEvent(UpdateType.INIT);
   }
 
   #renderComponents() {

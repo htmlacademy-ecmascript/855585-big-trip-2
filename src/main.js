@@ -54,7 +54,7 @@ function handleNewPointButtonClick() {
 }
 
 filterPresenter.init();
-mainPresenter.init();
+// mainPresenter.init();
 // Основная логика загрузки данных и инициализации
 
 Promise.all([
@@ -63,12 +63,11 @@ Promise.all([
   pointsModel.init()
 ]).then(() => {
   console.log('Все данные загружены');
-  // mainPresenter.initStart(); // теперь вызывается после загрузки
-
+  mainPresenter.init(); // Теперь вызываем init() после загрузки данных
 }).catch((error) => {
   console.error('Ошибка загрузки данных:', error);
 }).finally(() => {
-  // Показываем кнопку, пока не загрузятся все данные
   render(newPointButtonComponent, siteHeaderElement);
 });
+
 
