@@ -62,10 +62,10 @@ Promise.all([
   destinationsModel.init(),
   pointsModel.init()
 ]).then(() => {
-  console.log('Все данные загружены');
+  // console.log('Все данные загружены');
   mainPresenter.init(); // Теперь вызываем init() после загрузки данных
-}).catch((error) => {
-  console.error('Ошибка загрузки данных:', error);
+}).catch(() => {
+  // console.error('Ошибка загрузки данных:', error);
 }).finally(() => {
   render(newPointButtonComponent, siteHeaderElement);
 });
