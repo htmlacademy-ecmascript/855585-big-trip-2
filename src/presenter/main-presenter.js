@@ -1,4 +1,5 @@
 import { render, remove, RenderPosition } from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import SortingView from '../view/sorting-view.js';
 import PointsListView from '../view/points-list-view.js';
 import NoPointView from '../view/no-point-view.js';
@@ -8,6 +9,11 @@ import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 import { sortPointByDate, sortPointByPrice, sortPointByTime } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 
 //Создадим класс, включающий в себя отрисовку остальных связанных компонентов
@@ -30,9 +36,13 @@ export default class MainPresenter {
 
   #pointPresenters = new Map();
   #newPointPresenter = null;
-  #currentSortType = SortType.DAY;
+  #currentSortType = SortType.DAY.text;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
 
   constructor({ container, filtersContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewPointDestroy }) {
@@ -93,7 +103,7 @@ export default class MainPresenter {
   }
 
   createPoint() {
-    this.#currentSortType = SortType.DAY;
+    this.#currentSortType = SortType.DAY.text;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
   }
@@ -110,6 +120,7 @@ export default class MainPresenter {
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this.#pointPresenters.get(update.id).setSaving();
@@ -136,11 +147,11 @@ export default class MainPresenter {
         }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   //Будет реагировать на изменения модели
   #handleModelEvent = (updateType, data) => {
-    // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка
@@ -163,7 +174,6 @@ export default class MainPresenter {
         break;
     }
   };
-
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -230,7 +240,7 @@ export default class MainPresenter {
     }
 
     if (resetSortType) {
-      this.#currentSortType = SortType.DAY;
+      this.#currentSortType = SortType.DAY.text;
     }
   }
 
@@ -259,3 +269,4 @@ export default class MainPresenter {
     render(this.#noPointComponent, this.#pointsListComponent.element);
   }
 }
+
