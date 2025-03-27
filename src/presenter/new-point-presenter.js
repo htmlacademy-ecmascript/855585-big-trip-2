@@ -32,6 +32,7 @@ export default class NewPointPresenter {
       point: this.#pointsModel.newPoint,
       destinations: this.#destinationsModel.destinations,
       offers: this.#offersModel.offers,
+      isCreating: true,
       onSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick
     });

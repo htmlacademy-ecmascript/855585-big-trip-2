@@ -5,8 +5,9 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import NewPointButtonView from './view/new-point-button-view.js';
-import { render } from './framework/render.js';
+import { render, remove } from './framework/render.js';
 import PointsApiService from './points-api-service.js';
+import LoadingView from './view/loading-view.js';
 
 const AUTHORIZATION = 'Basic rS4gfS44wcl1sa2j';
 const END_POINT = 'https://23.objects.htmlacademy.pro/big-trip';
@@ -54,20 +55,19 @@ function handleNewPointButtonClick() {
 }
 
 filterPresenter.init();
-// mainPresenter.init();
-// Основная логика загрузки данных и инициализации
+
+const loadingComponent = new LoadingView();
+render(loadingComponent, eventsContainerElement);
 
 Promise.all([
   offersModel.init(),
   destinationsModel.init(),
   pointsModel.init()
 ]).then(() => {
-  // console.log('Все данные загружены');
-  mainPresenter.init(); // Теперь вызываем init() после загрузки данных
+  remove(loadingComponent);
+  mainPresenter.init();
 }).catch(() => {
-  // console.error('Ошибка загрузки данных:', error);
+  remove(loadingComponent);
 }).finally(() => {
   render(newPointButtonComponent, siteHeaderElement);
 });
-
-

@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(isBetween);
 
+const convertToISO = (date) => dayjs(date).toISOString();
+
 function humanizeTaskDueDate(dueDate, dateFormat) {
   return dueDate ? dayjs(dueDate).format(dateFormat) : '';
 }
@@ -83,4 +85,4 @@ function isDatesEqual(dateA, dateB) {
   return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 }
 
-export {humanizeTaskDueDate, calculatesTravelTime, isPointsPassed, isPointsPlanned, isPointsCurrent, sortPointByDate, sortPointByPrice, sortPointByTime, isDatesEqual};
+export {convertToISO, humanizeTaskDueDate, calculatesTravelTime, isPointsPassed, isPointsPlanned, isPointsCurrent, sortPointByDate, sortPointByPrice, sortPointByTime, isDatesEqual};

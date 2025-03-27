@@ -32,7 +32,7 @@ function createPointViewTemplate(point, offers, destinations) {
   const pointOffersTemplate = createPointOffersTemplate(pointTypeOffer.offers, point.offers);
 
 
-  const date = humanizeTaskDueDate(dateTo, DATE_FORMAT);
+  const date = humanizeTaskDueDate(dateFrom, DATE_FORMAT);
   const startTime = humanizeTaskDueDate(dateFrom, TIME_FORMAT);
   const endTime = humanizeTaskDueDate(dateTo, TIME_FORMAT);
   const travelTime = calculatesTravelTime(dateFrom, dateTo);
@@ -42,7 +42,7 @@ function createPointViewTemplate(point, offers, destinations) {
 
   return `<li class="trip-events__item">
               <div class="event">
-                <time class="event__date" datetime="${dateTo}">${date}</time>
+                <time class="event__date" datetime="${dateFrom}">${date}</time>
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
@@ -108,3 +108,4 @@ export default class PointView extends AbstractView {
     return createPointViewTemplate(this.#point, this.#offers, this.#destinations);
   }
 }
+

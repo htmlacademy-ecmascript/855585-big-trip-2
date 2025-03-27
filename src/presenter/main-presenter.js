@@ -165,6 +165,8 @@ export default class MainPresenter {
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
         this.#clearBoard({ resetSortType: true });
+        this.#currentSortType = SortType.DAY.text;
+        this.#renderSort();// Повторно отрисовываем компонент сортировки с новым состоянием
         this.#renderPointsList();
         break;
       case UpdateType.INIT:
@@ -269,4 +271,3 @@ export default class MainPresenter {
     render(this.#noPointComponent, this.#pointsListComponent.element);
   }
 }
-
