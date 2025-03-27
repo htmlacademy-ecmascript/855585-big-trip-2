@@ -72,7 +72,12 @@ function createEditFormViewTemplate(point, offers, destinations) {
   const startDate = humanizeTaskDueDate(dateFrom, DATE_TIME_FORMAT);
   const endDate = humanizeTaskDueDate(dateTo, DATE_TIME_FORMAT);
 
-  return `<form class="event event--edit" action="#" method="post">
+  const hasDestinationContent = editFormPointDestination.description || destinationPictures;
+  const hasOffers = pointTypeOffer.offers && pointTypeOffer.offers.length > 0;// Проверка наличия офферов
+
+
+  return `<li class="trip-events__item">
+              <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -123,26 +128,29 @@ function createEditFormViewTemplate(point, offers, destinations) {
                   </button>
                 </header>
                 <section class="event__details">
+                  ${hasOffers ? `
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
                     <div class="event__available-offers">
-                    ${offers.length !== 0 ? editFormOffersTemplate : ''}
+                    ${editFormOffersTemplate}
                     </div>
-                  </section>
+                  </section>` : ''}
 
+                   ${hasDestinationContent ? `
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${editFormPointDestination?.description || ''}</p>
-
-                     <div class="event__photos-container">
+                    ${editFormPointDestination.description ? `<p class="event__destination-description">${editFormPointDestination.description}</p>` : ''}
+                    ${destinationPictures ? `
+                    <div class="event__photos-container">
                       <div class="event__photos-tape">
                         ${destinationPictures}
                       </div>
-                    </div>
-                  </section>
+                    </div>` : ''}
+                  </section>` : ''}
                 </section>
-              </form>`;
+              </form>
+            </li>`;
 }
 
 export default class EditFormView extends AbstractStatefulView {

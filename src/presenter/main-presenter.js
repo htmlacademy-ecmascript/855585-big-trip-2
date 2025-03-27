@@ -36,7 +36,7 @@ export default class MainPresenter {
 
   #pointPresenters = new Map();
   #newPointPresenter = null;
-  #currentSortType = SortType.DAY;
+  #currentSortType = SortType.DAY.text;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
   #uiBlocker = new UiBlocker({
@@ -103,7 +103,7 @@ export default class MainPresenter {
   }
 
   createPoint() {
-    this.#currentSortType = SortType.DAY;
+    this.#currentSortType = SortType.DAY.text;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
   }
@@ -152,7 +152,6 @@ export default class MainPresenter {
 
   //Будет реагировать на изменения модели
   #handleModelEvent = (updateType, data) => {
-    // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка
@@ -175,7 +174,6 @@ export default class MainPresenter {
         break;
     }
   };
-
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -242,7 +240,7 @@ export default class MainPresenter {
     }
 
     if (resetSortType) {
-      this.#currentSortType = SortType.DAY;
+      this.#currentSortType = SortType.DAY.text;
     }
   }
 

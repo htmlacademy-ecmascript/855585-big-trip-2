@@ -11,6 +11,10 @@ function calculatesTravelTimeInMinutes(dateFrom, dateTo) {
   return date1.diff(dateFrom, 'minute');
 }
 
+function formatWithLeadingZero(value) {
+  return String(value).padStart(2, '0');
+}
+
 function calculatesTravelTime(dateFrom, dateTo) {
   const date1 = dayjs(dateTo);
   const date2 = dayjs(dateFrom);
@@ -19,8 +23,14 @@ function calculatesTravelTime(dateFrom, dateTo) {
   const hours = date1.diff(date2.add(days, 'day'), 'hour');
   const minutes = date1.diff(date2.add(days, 'day').add(hours, 'hour'), 'minute');
 
-  return `${days ? `${days}D` : ''} ${hours ? `${hours}H` : ''} ${minutes}`;
+  // Применяем форматирование для дней, часов и минут
+  const formattedDays = days ? `${formatWithLeadingZero(days)}D` : '';
+  const formattedHours = hours || days ? `${formatWithLeadingZero(hours)}H` : '00H'; // Если часов нет, отображаем 00H
+  const formattedMinutes = minutes || hours || days ? `${formatWithLeadingZero(minutes)}M` : '00M'; // Если минут нет, отображаем 00M
+
+  return `${formattedDays} ${formattedHours} ${formattedMinutes}`.trim();
 }
+
 
 function isPointsPassed(dueDate) {
   const now = dayjs();
@@ -54,9 +64,9 @@ function getWeightForNullDate(dateA, dateB) {
 }
 
 function sortPointByDate(pointA, pointB) {
-  const weight = getWeightForNullDate(pointA.dateTo, pointB.dateTo);
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
 
-  return weight ?? dayjs(pointB.dateTo).diff(dayjs(pointA.dateTo));
+  return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 }
 
 function sortPointByPrice(pointA, pointB) {
