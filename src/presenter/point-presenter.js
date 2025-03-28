@@ -58,6 +58,7 @@ export default class PointPresenter {
       offers: this.#offers,
       destinations: this.#destinations,
       onSubmit: this.#handleSubmit,
+      onDiscardChanges: this.#handleDiscardChanges,
       onDeleteClick: this.#handleDeleteClick
     });
 
@@ -77,7 +78,7 @@ export default class PointPresenter {
     //Проверям установлен ли режим редктирования
     if(this.#mode === Mode.EDITING) {
       replace(this.#pointComponent, prevEditFormComponent);
-      this.#mode = Mode.DEFAULT;
+      this.#mode = Mode.VIEW;
     }
 
     //Удаляем старые компоненты
@@ -117,7 +118,7 @@ export default class PointPresenter {
   }
 
   setAborting() {
-    if (this.#mode === Mode.DEFAULT) {
+    if (this.#mode === Mode.VIEW) {
       this.#pointComponent.shake();
       return;
     }
@@ -166,8 +167,6 @@ export default class PointPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
-
-    this.#replaceFormToView();
   };
 
   #handleDeleteClick = (point) => {
@@ -184,5 +183,10 @@ export default class PointPresenter {
       this.#replaceFormToView();
       document.removeEventListener('keydown', this.#escKeydownHandler);
     }
+  };
+
+  #handleDiscardChanges = () => {
+    this.#editFormComponent.reset(this.#point);
+    this.#replaceFormToView();
   };
 }

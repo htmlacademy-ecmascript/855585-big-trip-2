@@ -108,12 +108,6 @@ export default class MainPresenter {
     this.#newPointPresenter.init();
   }
 
-  #handlePointChange = (updatedPoint) => {
-    //Здесь будем вызывать обновление модели
-
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
-  };
-
   #handleModeChange = () => {
     this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());

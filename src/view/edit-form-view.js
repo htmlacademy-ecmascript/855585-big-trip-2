@@ -117,10 +117,10 @@ function createEditFormViewTemplate(point, offers, destinations, isCreating) {
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startDate}" ${isDisabled ? 'disabled' : ''}>
+                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${isCreating ? '' : startDate}" ${isDisabled ? 'disabled' : ''}>
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${endDate}" ${isDisabled ? 'disabled' : ''}>
+                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${isCreating ? '' : endDate}" ${isDisabled ? 'disabled' : ''}>
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -175,15 +175,17 @@ export default class EditFormView extends AbstractStatefulView {
   #offers = null;
   #destinations = null;
   #handleSubmit = null;
+  #handleDiscardChanges = null;
   #isCreating = false;
 
-  constructor({point, offers, destinations, isCreating, onSubmit, onDeleteClick}) {
+  constructor({point, offers, destinations, isCreating, onSubmit, onDiscardChanges, onDeleteClick}) {
     super();
 
     this.#offers = offers;
     this.#destinations = destinations;
     this.#isCreating = isCreating;
     this.#handleSubmit = onSubmit;
+    this.#handleDiscardChanges = onDiscardChanges;
     this.#handleDeleteClick = onDeleteClick;
 
 
@@ -197,7 +199,8 @@ export default class EditFormView extends AbstractStatefulView {
 
   _restoreHandlers() {
     if (this.element.querySelector('.event__rollup-btn')) {
-      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#submitHandler);
+      this.element.querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#handleDiscardChanges);
     }
     this.element.querySelector('form').addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#changeTypeHandler);
@@ -301,9 +304,9 @@ export default class EditFormView extends AbstractStatefulView {
       dateStartElement,
       {
         ...commonConfig,
-        defaultDate: this._state.dateFrom,
+        defaultDate: this.#isCreating ? '' : this._state.dateFrom,
         onChange: this.#changeStartDateHandler ,
-        maxDate: this._state.dateTo
+        maxDate: this._state.dateTo || ''
       }
     );
 
@@ -311,9 +314,9 @@ export default class EditFormView extends AbstractStatefulView {
       dateEndElement,
       {
         ...commonConfig,
-        defaultDate: this._state.dateTo,
+        defaultDate: this.#isCreating ? '' : this._state.dateTo,
         onChange: this.#changeEndDateHandler,
-        minDate: this._state.dateFrom
+        minDate: this._state.dateFrom || ''
       }
     );
   }
