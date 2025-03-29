@@ -9,6 +9,7 @@ import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 import { sortPointByDate, sortPointByPrice, sortPointByTime } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
+import ErrorView from '../view/error-view.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -32,6 +33,7 @@ export default class MainPresenter {
   #sortingComponent = null;
   #pointsListComponent = new PointsListView();
   #loadingComponent = new LoadingView();
+  #errorComponent = new ErrorView();
   #noPointComponent = null;
 
   #pointPresenters = new Map();
@@ -44,6 +46,8 @@ export default class MainPresenter {
     upperLimit: TimeLimit.UPPER_LIMIT
   });
 
+  #onNewPointDestroy = null;
+
 
   constructor({ container, filtersContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewPointDestroy }) {
     //Данные из main.js сохранили внутри класса
@@ -53,6 +57,7 @@ export default class MainPresenter {
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
+    this.#onNewPointDestroy = onNewPointDestroy;
 
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#pointsListComponent.element,
@@ -60,12 +65,20 @@ export default class MainPresenter {
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
       onDataChange: this.#handleViewAction,
-      onDestroy: onNewPointDestroy
+      onDestroy: this.#destroyPoint,
     });
 
     this.#filterModel.addObserver(this.#handleModelEvent);
 
   }
+
+  #destroyPoint = () => {
+    this.#onNewPointDestroy();
+
+    if (!this.points.length) {
+      this.#renderEmptyPointsList();
+    }
+  };
 
   get points() {
     this.#filterType = this.#filterModel.filter;
@@ -79,9 +92,9 @@ export default class MainPresenter {
         return filteredPoints.sort(sortPointByTime);
       case SortType.PRICE.text:
         return filteredPoints.sort(sortPointByPrice);
+      default:
+        return filteredPoints.sort(sortPointByDate);
     }
-
-    return filteredPoints;
   }
 
   init() {
@@ -106,6 +119,8 @@ export default class MainPresenter {
     this.#currentSortType = SortType.DAY.text;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
+
+    remove(this.#noPointComponent);
   }
 
   #handleModeChange = () => {
@@ -207,12 +222,22 @@ export default class MainPresenter {
       return;
     }
 
-    const points = this.points; // Берем уже отсортированные точки
+    if (this.points.includes('error')
+      || !this.#destinationsModel.destinations.length
+      || !this.#offersModel.offers.length) {
+      this.#renderError();
 
-    if (points.length === 0) {
+      return;
+    }
+
+
+    if (!this.points.length) {
       this.#renderEmptyPointsList();
       return;
     }
+
+    const points = this.points; // Берем уже отсортированные точки
+
 
     for (let i = 0; i < points.length; i++) {
       this.#renderPoint(points[i]);
@@ -221,6 +246,10 @@ export default class MainPresenter {
 
   #renderLoading() {
     render(this.#loadingComponent, this.#pointsListComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderError() {
+    render(this.#errorComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   #clearBoard({ resetSortType = false } = {}) {
@@ -256,9 +285,9 @@ export default class MainPresenter {
   }
 
   #renderEmptyPointsList() {
-    if (this.#noPointComponent) {
-      return;
-    }
+    // if (this.#noPointComponent) {
+    //   return;
+    // }
     this.#noPointComponent = new NoPointView({
       filterType: this.#filterType
     });
