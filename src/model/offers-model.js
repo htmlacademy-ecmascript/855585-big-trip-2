@@ -9,6 +9,9 @@ export default class OffersModel extends Observable {
     this.#pointsApiService = pointsApiService;
   }
 
+  get offers() {
+    return this.#offers;
+  }
 
   async init() {
     try {
@@ -16,11 +19,6 @@ export default class OffersModel extends Observable {
     } catch (error) {
       this.#offers = [];
     }
-  }
-
-  //Получим данные из свойства offers
-  get offers() {
-    return this.#offers;
   }
 }
 

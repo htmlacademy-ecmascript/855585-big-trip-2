@@ -7,7 +7,10 @@ export default class DestinationsModel extends Observable {
   constructor({pointsApiService}) {
     super();
     this.#pointsApiService = pointsApiService;
+  }
 
+  get destinations() {
+    return this.#destinations;
   }
 
   async init() {
@@ -16,11 +19,5 @@ export default class DestinationsModel extends Observable {
     } catch(err) {
       this.#destinations = [];
     }
-  }
-
-
-  //Получим данные из свойства destinations
-  get destinations() {
-    return this.#destinations;
   }
 }

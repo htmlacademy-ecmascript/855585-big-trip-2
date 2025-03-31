@@ -4,12 +4,7 @@ import {isEscapeKey} from '../utils/common.js';
 import EditFormView from '../view/edit-form-view.js';
 import {UpdateType, UserAction} from '../const.js';
 import {isDatesEqual} from '../utils/point.js';
-
-const Mode = {
-  VIEW: 'VIEW',
-  EDITING: 'EDITING',
-};
-
+import {Mode} from '../const.js';
 export default class PointPresenter {
   #pointListContainer = null;
   #handleDataChange = null;
@@ -24,7 +19,6 @@ export default class PointPresenter {
   #offers = [];
   #destinations = [];
 
-  //Присвоим контейнер для точек в конструктор офферы и направления и их будем передавать через род-й перезентер
   constructor({pointListContainer, offers, destinations, onDataChange, onModeChange}) {
     this.#pointListContainer = pointListContainer;
     this.#offers = offers;
@@ -33,22 +27,18 @@ export default class PointPresenter {
     this.#handleModeChange = onModeChange;
   }
 
-  //Заведем метод инициализации презенетра
   init(point) {
     this.#point = point;
 
-    //Создадим переменные для экземпляров вью (там будет либо null либо соотв-й экземпляр))
     const prevPointComponent = this.#pointComponent;
     const prevEditFormComponent = this.#editFormComponent;
 
-    //Создадим экземпляры наших вью
     this.#pointComponent = new PointView({
       point: this.#point,
       offers: this.#offers,
       destinations: this.#destinations,
       onClick: () => {
         this.#replaceViewToForm();
-        document.addEventListener('keydown', this.#escKeydownHandler);
       },
       onFavoriteClick: this.#handleFavoriteClick,
     });
@@ -62,31 +52,24 @@ export default class PointPresenter {
       onDeleteClick: this.#handleDeleteClick
     });
 
-    //Проверяем не равны ли экзмепляры null
     if(prevPointComponent === null || prevEditFormComponent === null) {
-      //Отрендерим вью
       render(this.#pointComponent, this.#pointListContainer);
       return;
     }
 
-    //Проверям установлен ли режим просмотра
     if(this.#mode === Mode.VIEW) {
-      //Заменяем старый компонент на новый
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    //Проверям установлен ли режим редктирования
     if(this.#mode === Mode.EDITING) {
       replace(this.#pointComponent, prevEditFormComponent);
       this.#mode = Mode.VIEW;
     }
 
-    //Удаляем старые компоненты
     remove(prevPointComponent);
     remove(prevEditFormComponent);
   }
 
-  //Метод для удаления компонентов точки и формы
   destroy() {
     remove(this.#pointComponent);
     remove(this.#editFormComponent);
@@ -136,27 +119,18 @@ export default class PointPresenter {
 
   #replaceViewToForm() {
     replace(this.#editFormComponent, this.#pointComponent);
-    document.addEventListener('keydown', this.#escKeydownHandler);
     this.#handleModeChange();
     this.#mode = Mode.EDITING;
+    document.addEventListener('keydown', this.#escKeydownHandler);
   }
 
   #replaceFormToView() {
     replace(this.#pointComponent, this.#editFormComponent);
-    document.removeEventListener('keydown', this.#escKeydownHandler);
     this.#mode = Mode.VIEW;
+    document.removeEventListener('keydown', this.#escKeydownHandler);
   }
 
-  #handleFavoriteClick = () => {
-    this.#handleDataChange(
-      UserAction.UPDATE_POINT,
-      UpdateType.PATCH,
-      {...this.#point, isFavorite: !this.#point.isFavorite});
-  };
-
   #handleSubmit = (update) => {
-    // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
-    // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
     const isMinorUpdate =
       this.#point.basePrice !== update.basePrice ||
       !isDatesEqual(this.#point.dateFrom, update.dateFrom) ||
@@ -177,6 +151,11 @@ export default class PointPresenter {
     );
   };
 
+  #handleDiscardChanges = () => {
+    this.#editFormComponent.reset(this.#point);
+    this.#replaceFormToView();
+  };
+
   #escKeydownHandler = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
@@ -185,8 +164,10 @@ export default class PointPresenter {
     }
   };
 
-  #handleDiscardChanges = () => {
-    this.#editFormComponent.reset(this.#point);
-    this.#replaceFormToView();
+  #handleFavoriteClick = () => {
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite});
   };
 }

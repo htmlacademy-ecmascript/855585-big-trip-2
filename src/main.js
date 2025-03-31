@@ -5,7 +5,7 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import NewPointButtonView from './view/new-point-button-view.js';
-import { render, remove } from './framework/render.js';
+import {render, remove} from './framework/render.js';
 import PointsApiService from './points-api-service.js';
 import LoadingView from './view/loading-view.js';
 
@@ -16,6 +16,7 @@ const bodyElement = document.body;
 const eventsContainerElement = bodyElement.querySelector('.trip-events');
 const filtersContainerElement = bodyElement.querySelector('.trip-controls__filters');
 const siteHeaderElement = bodyElement.querySelector('.trip-main');
+const tripInfoContainerElement = document.querySelector('.trip-main');
 
 const pointsApiService = new PointsApiService(END_POINT, AUTHORIZATION);
 
@@ -24,10 +25,10 @@ const destinationsModel = new DestinationsModel({pointsApiService});
 const offersModel = new OffersModel({pointsApiService});
 const filterModel = new FilterModel();
 
-//Передадим презентеру кроме контейнера модель точек через конструктор
 const mainPresenter = new MainPresenter({
   container: eventsContainerElement,
   filtersContainer: filtersContainerElement,
+  tripInfoContainer: tripInfoContainerElement,
   filterModel,
   pointsModel,
   offersModel,
