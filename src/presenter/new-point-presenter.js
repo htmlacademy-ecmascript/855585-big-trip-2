@@ -32,7 +32,9 @@ export default class NewPointPresenter {
       point: this.#pointsModel.newPoint,
       destinations: this.#destinationsModel.destinations,
       offers: this.#offersModel.offers,
+      isCreating: true,
       onSubmit: this.#handleFormSubmit,
+      onDiscardChanges: this.#handleDeleteClick,
       onDeleteClick: this.#handleDeleteClick
     });
 
@@ -54,8 +56,22 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#editFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
   setAborting() {
+    if (!this.#editFormComponent) {
+      return; // Прекратить выполнение, если форма уже удалена
+    }
+
     const resetFormState = () => {
+      if (!this.#editFormComponent) {
+        return; // Повторная проверка, если форма удалилась за время анимации
+      }
       this.#editFormComponent.updateElement({
         isDisabled: false,
         isSaving: false,
@@ -66,11 +82,8 @@ export default class NewPointPresenter {
     this.#editFormComponent.shake(resetFormState);
   }
 
+
   #handleFormSubmit = (point) => {
-    if (!point.destination) {
-      this.destroy();
-      return;
-    }
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
@@ -78,13 +91,6 @@ export default class NewPointPresenter {
     );
 
   };
-
-  setSaving() {
-    this.#editFormComponent.updateElement({
-      isDisabled: true,
-      isSaving: true,
-    });
-  }
 
   #handleDeleteClick = () => {
     this.destroy();
