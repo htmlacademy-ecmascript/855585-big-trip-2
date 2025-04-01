@@ -17,7 +17,7 @@ function createFilterItemTemplate(filter, currentFilterType) {
   );
 }
 
-function createFiltersViewTemplate(filterItems, currentFilterType) {
+function createFilterViewTemplate(filterItems, currentFilterType) {
 
   const filterItemsTemplate = filterItems
     .map((filter) => createFilterItemTemplate(filter, currentFilterType))
@@ -29,7 +29,7 @@ function createFiltersViewTemplate(filterItems, currentFilterType) {
               </form>`;
 }
 
-export default class FiltersView extends AbstractView {
+export default class FilterView extends AbstractView {
   #filters = null;
   #currentFilter = null;
   #handleFilterTypeChange = null;
@@ -44,7 +44,7 @@ export default class FiltersView extends AbstractView {
   }
 
   get template() {
-    return createFiltersViewTemplate(this.#filters, this.#currentFilter);
+    return createFilterViewTemplate(this.#filters, this.#currentFilter);
   }
 
   #filterTypeChangeHandler = (evt) => {
