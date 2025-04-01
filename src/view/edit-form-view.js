@@ -70,8 +70,8 @@ function createEditFormViewTemplate(point, offers, destinations, isCreating) {
 
   const eventTypeItemTemplate = createEventTypeItem(offers);
 
-  const startDate = humanizeDate(dateFrom, DATE_TIME_FORMAT);
-  const endDate = humanizeDate(dateTo, DATE_TIME_FORMAT);
+  const startDate = isCreating ? '' : humanizeDate(dateFrom, DATE_TIME_FORMAT);
+  const endDate = isCreating ? '' : humanizeDate(dateTo, DATE_TIME_FORMAT);
 
   const hasDestinationContent = editFormPointDestination.description || destinationPictures;
 
@@ -186,7 +186,13 @@ export default class EditFormView extends AbstractStatefulView {
     this.#handleDiscardChanges = onDiscardChanges;
     this.#handleDeleteClick = onDeleteClick;
 
-    this._setState(EditFormView.parsePointToState(point));
+    const initialState = isCreating ? {
+      ...point,
+      dateFrom: '',
+      dateTo: '',
+    } : EditFormView.parsePointToState(point);
+
+    this._setState(initialState);
     this._restoreHandlers();
   }
 
@@ -290,7 +296,7 @@ export default class EditFormView extends AbstractStatefulView {
       dateStartElement,
       {
         ...commonConfig,
-        defaultDate: this.#isCreating ? '' : this._state.dateFrom,
+        defaultDate: this._state.dateFrom,
         onChange: this.#changeStartDateHandler,
       }
     );
@@ -299,8 +305,8 @@ export default class EditFormView extends AbstractStatefulView {
       dateEndElement,
       {
         ...commonConfig,
-        defaultDate: this.#isCreating ? '' : this._state.dateTo,
-        minDate: this._state.dateFrom || '',
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
         onChange: this.#changeEndDateHandler,
       }
     );
