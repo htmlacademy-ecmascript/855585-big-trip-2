@@ -6,7 +6,7 @@ import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import {render, remove} from './framework/render.js';
-import PointsApiService from './points-api-service.js';
+import PointsApiService from './api/points-api-service.js';
 import LoadingView from './view/loading-view.js';
 
 const AUTHORIZATION = 'Basic rS4gfS44wcl1sa2j';
