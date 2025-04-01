@@ -282,7 +282,7 @@ export default class EditFormView extends AbstractStatefulView {
     const commonConfig = {
       dateFormat: 'd/m/y H:i',
       enableTime: true,
-      locale: { firstDayOfWeek: 1 },
+      locale: {firstDayOfWeek: 1},
       'time_24hr': true
     };
 
@@ -292,7 +292,6 @@ export default class EditFormView extends AbstractStatefulView {
         ...commonConfig,
         defaultDate: this.#isCreating ? '' : this._state.dateFrom,
         onChange: this.#changeStartDateHandler,
-        maxDate: this._state.dateTo || ''
       }
     );
 
@@ -301,8 +300,8 @@ export default class EditFormView extends AbstractStatefulView {
       {
         ...commonConfig,
         defaultDate: this.#isCreating ? '' : this._state.dateTo,
+        minDate: this._state.dateFrom || '',
         onChange: this.#changeEndDateHandler,
-        minDate: this._state.dateFrom || ''
       }
     );
   }
@@ -316,7 +315,6 @@ export default class EditFormView extends AbstractStatefulView {
   #changeEndDateHandler = ([userDate]) => {
     const isoDate = convertDateToISO(userDate);
     this._setState({ dateTo: isoDate });
-    this.#datepickerStart.set('maxDate', isoDate);
   };
 
   static parsePointToState(point) {

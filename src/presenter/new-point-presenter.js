@@ -65,12 +65,12 @@ export default class NewPointPresenter {
 
   setAborting() {
     if (!this.#editFormComponent) {
-      return; // Прекратить выполнение, если форма уже удалена
+      return;
     }
 
     const resetFormState = () => {
       if (!this.#editFormComponent) {
-        return; // Повторная проверка, если форма удалилась за время анимации
+        return;
       }
       this.#editFormComponent.updateElement({
         isDisabled: false,

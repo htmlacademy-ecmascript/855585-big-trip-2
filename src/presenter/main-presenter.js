@@ -83,33 +83,6 @@ export default class MainPresenter {
     this.#handleModelEvent(UpdateType.INIT);
   }
 
-  createPoint() {
-    this.#currentSortType = SortType.DAY.text;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#newPointPresenter.init();
-
-    remove(this.#noPointComponent);
-  }
-
-  #renderTripInfo = () => {
-    this.#tripInfoComponent = new TripInfoView({
-      points: this.#pointsModel.points,
-      destinations: this.#destinationsModel.destinations,
-      offers: this.#offersModel.offers,
-    });
-
-    render(this.#tripInfoComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
-  };
-
-  #renderSort() {
-    this.#sortingComponent = new SortingView({
-      currentSortType: this.#currentSortType,
-      onSortTypeChange: this.#handleSortTypeChange
-    });
-
-    render(this.#sortingComponent, this.#container, RenderPosition.AFTERBEGIN);
-  }
-
   #renderBoard() {
     render(this.#pointsListComponent, this.#container);
 
@@ -159,12 +132,43 @@ export default class MainPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
+  createPoint() {
+    this.#currentSortType = SortType.DAY.text;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointPresenter.init();
+
+    remove(this.#noPointComponent);
+  }
+
   #renderLoading() {
     render(this.#loadingComponent, this.#pointsListComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderError() {
     render(this.#errorComponent, this.#container, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderTripInfo = () => {
+    if (this.#tripInfoComponent) {
+      remove(this.#tripInfoComponent);
+    }
+
+    this.#tripInfoComponent = new TripInfoView({
+      points: this.#pointsModel.points,
+      destinations: this.#destinationsModel.destinations,
+      offers: this.#offersModel.offers,
+    });
+
+    render(this.#tripInfoComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
+  };
+
+  #renderSort() {
+    this.#sortingComponent = new SortingView({
+      currentSortType: this.#currentSortType,
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
+    render(this.#sortingComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   #renderEmptyPointsList() {
@@ -241,6 +245,7 @@ export default class MainPresenter {
     switch (updateType) {
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data);
+        this.#renderTripInfo();
         break;
       case UpdateType.MINOR:
         this.#clearBoard();
