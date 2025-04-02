@@ -2,25 +2,6 @@ const TIME_FORMAT = 'HH:mm';
 const DATE_FORMAT = 'MMM D';
 const DATE_TIME_FORMAT = 'DD/MM/YY HH:mm';
 
-const POINT_TYPES =
-[
-  'Taxi',
-  'Bus',
-  'Train',
-  'Ship',
-  'Drive',
-  'Flight',
-  'Check-in',
-  'Sightseeing',
-  'Restaurant'
-];
-
-const DESTINATIONS = [
-  'Amsterdam',
-  'Geneva',
-  'Chamonix'
-];
-
 const FilterType = {
   EVERYTHING:'everything',
   FUTURE: 'future',
@@ -84,5 +65,5 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
-export {TIME_FORMAT, DATE_FORMAT, DATE_TIME_FORMAT, POINT_TYPES, DESTINATIONS, FilterType, SortType, UserAction, UpdateType, TimeLimit, Mode};
+export {TIME_FORMAT, DATE_FORMAT, DATE_TIME_FORMAT, FilterType, SortType, UserAction, UpdateType, TimeLimit, Mode};
 
