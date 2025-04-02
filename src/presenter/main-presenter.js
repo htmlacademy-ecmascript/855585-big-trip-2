@@ -133,6 +133,12 @@ export default class MainPresenter {
   }
 
   createPoint() {
+    if (this.points.includes('error') ||
+      !this.#destinationsModel.destinations.length ||
+      !this.#offersModel.offers.length) {
+      return;
+    }
+
     this.#currentSortType = SortType.DAY.text;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
